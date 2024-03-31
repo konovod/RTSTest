@@ -22,6 +22,15 @@ namespace ECS
       return this;
     }
 
+    public Entity AddDefault(Type type)
+    {
+      var pool = World.GetStorage(type);
+#pragma warning disable CS8602 // Dereference of a possibly null reference.
+      pool.AddDefault(Id);
+#pragma warning restore CS8602 // Dereference of a possibly null reference.
+      return this;
+    }
+
     public readonly bool Has<T>() where T : struct
     {
       return World.GetStorage<T>().Has(Id);
@@ -186,11 +195,17 @@ namespace ECS
 
     public T FirstComponent<T>() where T : struct
     {
-      return GetStorage<T>().Items.Items[0];
+      var pool = GetStorage<T>();
+      if (pool.Count() == 0)
+        throw new Exception("No components in pool");
+      return pool.Items.Items[0];
     }
     public ref T RefFirstComponent<T>() where T : struct
     {
-      return ref GetStorage<T>().Items.Items[0];
+      var pool = GetStorage<T>();
+      if (pool.Count() == 0)
+        throw new Exception("No components in pool");
+      return ref pool.Items.Items[0];
     }
 
     public int CountComponents(Type type)
@@ -214,6 +229,7 @@ namespace ECS
     void Remove(int id);
     int IdByIndex(int id);
     void Clear();
+    void AddDefault(int id);
   }
 
   // Created because older c# do not support getting ref on a list element
@@ -270,11 +286,23 @@ namespace ECS
     }
     public void Add(int id, T item)
     {
+      var index = AddIndex(id);
+      Items.Items[index] = item;
+    }
+
+    public void AddDefault(int id)
+    {
+      var index = AddIndex(id);
+      Items.Items[index] = default;
+    }
+
+    public int AddIndex(int id)
+    {
       Items.Add(default);
       Entities.Add(id);
       int index = Items.Count - 1;
       IndexByEntity.Add(id, index);
-      Items.Items[index] = item;
+      return index;
     }
 
     public int IndexById(int id)

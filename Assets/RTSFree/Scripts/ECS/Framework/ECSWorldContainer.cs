@@ -12,6 +12,10 @@ public class ECSWorldContainer : MonoBehaviour
     public ECS.Systems OnUpdate;
     public ECS.Systems OnFixedUpdate;
 
+    [SerializeField]
+    public bool ShowStatistics;
+    public float StatisticsThreshold;
+
     void Awake()
     {
         Active = this;
@@ -26,7 +30,7 @@ public class ECSWorldContainer : MonoBehaviour
         ///
 
         ///
-        OnFixedUpdate.Add(new ProcessRemoveAtTime(world));
+        OnFixedUpdate.Add(new ProcessComponentRequests(world));
         OnFixedUpdate.DelHere<RemoveRequest>();
 
     }
@@ -45,6 +49,30 @@ public class ECSWorldContainer : MonoBehaviour
     void FixedUpdate()
     {
         OnFixedUpdate.Execute();
+    }
+
+    // Display performance UI
+    static float GuiPos = 0.0f;
+    public void OnGUI()
+    {
+        if (!ShowStatistics)
+            return;
+        GuiPos = 0;
+        GUI.Label(GUIRect(), $"Entities: n={world.EntitiesCount()}");
+        GUI.Label(GUIRect(), "OnUpdate:");
+        foreach (var pair in OnUpdate.Statistics)
+            if (pair.Value > StatisticsThreshold)
+                GUI.Label(GUIRect(), $"  {pair.Key}: {pair.Value}ms");
+        GUI.Label(GUIRect(), "OnFixedUpdate:");
+        foreach (var pair in OnFixedUpdate.Statistics)
+            if (pair.Value > StatisticsThreshold)
+                GUI.Label(GUIRect(), $"  {pair.Key}: {pair.Value}ms");
+    }
+
+    static Rect GUIRect(float height = 0.025f)
+    {
+        GuiPos += height;
+        return new Rect(Screen.width * 0.05f, Screen.height * GuiPos, 500f, 20f);
     }
 
 }
