@@ -28,6 +28,7 @@ namespace ECS
 #pragma warning disable CS8602 // Dereference of a possibly null reference.
       pool.AddDefault(Id);
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
+      World.IncComponentCount(Id);
       return this;
     }
 

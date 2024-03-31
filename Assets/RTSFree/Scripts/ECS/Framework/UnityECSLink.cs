@@ -40,8 +40,8 @@ namespace UnityECSLink
       {
         var info = ent.Get<InstantiateGameObject>();
         var obj = GameObject.Instantiate(info.Template, info.pos, info.rot);
-        ent.Remove<InstantiateGameObject>();
         ent.Add(new LinkedGameObject(obj));
+        ent.Remove<InstantiateGameObject>();
         var ReverseLink = obj.AddComponent<LinkedEntity>();
         ReverseLink.entity = ent;
       }

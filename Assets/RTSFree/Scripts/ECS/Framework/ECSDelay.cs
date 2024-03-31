@@ -87,7 +87,7 @@ namespace UnityECSLink
             // process requests that should trigger
             world.RefFirstComponent<GlobalTime>().Time += Time.fixedTime;
             var CurTime = world.FirstComponent<GlobalTime>().Time;
-            while ((queue.Count > 0) && (queue.Peek().Time() >= CurTime))
+            while ((queue.Count > 0) && (queue.Peek().Time() <= CurTime))
             {
                 var request = queue.Dequeue();
                 request.Execute();

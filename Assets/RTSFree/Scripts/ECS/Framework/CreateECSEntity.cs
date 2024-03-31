@@ -4,6 +4,7 @@ using UnityEngine;
 using System;
 using ECS;
 using UnityECSLink;
+using Unity.VisualScripting;
 
 
 namespace UnityECSLink
@@ -16,12 +17,22 @@ namespace UnityECSLink
         void Start()
         {
             var world = ECSWorldContainer.Active.world;
-            var entity = world.NewEntity();
+            ECS.Entity entity;
+            LinkedEntity linked = null;
+            if (linked = gameObject.GetComponent<LinkedEntity>())
+            {
+                entity = linked.entity;
+            }
+            else
+                entity = world.NewEntity();
             foreach (var provider in providers)
                 provider.ProvideComponent(entity);
-            var link = gameObject.AddComponent<LinkedEntity>();
-            link.entity = entity;
-            entity.Add(new LinkedGameObject(gameObject));
+            if (!linked)
+            {
+                linked = gameObject.AddComponent<LinkedEntity>();
+                linked.entity = entity;
+                entity.Add(new LinkedGameObject(gameObject));
+            }
         }
     }
 }

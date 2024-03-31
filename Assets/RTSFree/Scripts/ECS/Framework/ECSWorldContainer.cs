@@ -23,7 +23,7 @@ public class ECSWorldContainer : MonoBehaviour
         ////////////////// add here systems that is called on Update
         OnUpdate.Add(new ProcessGameObjects(world));
         OnUpdate.Add(new ECSGame.ExampleSystem(world));
-
+        OnUpdate.Add(new ECSGame.SpawnSystem(world));
         ///
         OnFixedUpdate = new ECS.Systems(world);
         ////////////////// add here systems that is called on FixedUpdate
@@ -32,6 +32,7 @@ public class ECSWorldContainer : MonoBehaviour
         ///
         OnFixedUpdate.Add(new ProcessComponentRequests(world));
         OnFixedUpdate.DelHere<RemoveRequest>();
+        OnFixedUpdate.DelHere<AddRequest>();
 
     }
 
