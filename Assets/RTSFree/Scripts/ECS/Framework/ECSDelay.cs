@@ -85,7 +85,7 @@ namespace UnityECSLink
             }
 #pragma warning restore CS8602 // Dereference of a possibly null reference.
             // process requests that should trigger
-            world.RefFirstComponent<GlobalTime>().Time += Time.fixedTime;
+            world.RefFirstComponent<GlobalTime>().Time = Time.fixedTime;
             var CurTime = world.FirstComponent<GlobalTime>().Time;
             while ((queue.Count > 0) && (queue.Peek().Time() <= CurTime))
             {
