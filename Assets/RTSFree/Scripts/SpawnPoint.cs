@@ -68,9 +68,9 @@ namespace RTSToolkitFree
 
             if (instanceUp != null)
             {
-                if(instanceUp.nation >= Diplomacy.active.numberNations)
+                if(instanceUp.nation >= BattleSystem.active.numberNations)
                 {
-                    Diplomacy.active.AddNation();
+                    BattleSystem.active.AddNation();
                 }
 
                 instanceUp.isReady = true;
