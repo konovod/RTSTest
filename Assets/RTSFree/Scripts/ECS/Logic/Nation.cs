@@ -74,12 +74,6 @@ namespace ECSGame
         }
     }
 
-    [Serializable]
-    public struct DistanceTreesNeedsUpdate
-    {
-
-    }
-
     public class UpdateSearchTree : ECS.System
     {
         Filter all_units;
@@ -93,8 +87,6 @@ namespace ECSGame
         }
         public override void Process(Entity e)
         {
-            // if (world.CountComponents<DistanceTreesNeedsUpdate>() == 0)
-            //     return;
             var tree = e.Get<DistanceTree>();
             tree.targets.Clear();
             foreach (var unit in all_units)

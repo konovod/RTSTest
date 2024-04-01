@@ -10,16 +10,6 @@ using UnityEngine;
 namespace ECSGame
 {
 
-    [Serializable]
-    public struct Health
-    {
-        public int V;
-        public int Max;
-    }
-    public struct Alive { }
-    public struct Dying { }
-    public struct Rotting { }
-
     public struct AttackTarget
     {
         public Entity v;
@@ -47,6 +37,16 @@ namespace ECSGame
     {
         public Entity e;
     }
+
+    [Serializable]
+    public struct Health
+    {
+        public int V;
+        public int Max;
+    }
+    public struct Alive { }
+    public struct Dying { }
+    public struct Rotting { }
 
     public struct AttackHit
     {
