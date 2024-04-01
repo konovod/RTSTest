@@ -85,20 +85,12 @@ namespace ECSGame
         Filter all_units;
         public UpdateSearchTree(ECS.World aworld) : base(aworld)
         {
-            all_units = world.Inc<Alive>();
+            all_units = world.Inc<Alive>().Inc<DefenseStats>();
         }
         public override ECS.Filter? Filter(ECS.World world)
         {
             return world.Inc<DistanceTree>();
         }
-
-
-        public override void Init()
-        {
-            var e = world.NewEntity();
-        }
-
-
         public override void Process(Entity e)
         {
             // if (world.CountComponents<DistanceTreesNeedsUpdate>() == 0)

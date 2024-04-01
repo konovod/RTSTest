@@ -27,6 +27,7 @@ public class ECSWorldContainer : MonoBehaviour
         OnUpdate.Add(new ECSGame.CreateNations(world));
         OnUpdate.Add(new ECSGame.UpdateSearchTree(world));
         OnUpdate.DelHere<DistanceTreesNeedsUpdate>();
+        OnUpdate.Add(new ECSGame.FindAttackTarget(world));
         ///
         OnFixedUpdate = new ECS.Systems(world);
         ////////////////// add here systems that is called on FixedUpdate
