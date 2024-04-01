@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityECSLink;
+using ECSGame;
 
 //Контейнер для "мира" и систем ецс. Ставится на сцену в единственном экземлпяре 
 // В этот класс добавляются все системы игры
@@ -22,8 +23,10 @@ public class ECSWorldContainer : MonoBehaviour
         OnUpdate = new ECS.Systems(world);
         ////////////////// add here systems that is called on Update
         OnUpdate.Add(new ProcessGameObjects(world));
-        OnUpdate.Add(new ECSGame.ExampleSystem(world));
         OnUpdate.Add(new ECSGame.SpawnSystem(world));
+        OnUpdate.Add(new ECSGame.CreateNations(world));
+        OnUpdate.Add(new ECSGame.UpdateSearchTree(world));
+        OnUpdate.DelHere<DistanceTreesNeedsUpdate>();
         ///
         OnFixedUpdate = new ECS.Systems(world);
         ////////////////// add here systems that is called on FixedUpdate
@@ -63,11 +66,11 @@ public class ECSWorldContainer : MonoBehaviour
         GUI.Label(GUIRect(), "OnUpdate:");
         foreach (var pair in OnUpdate.Statistics)
             if (pair.Value > StatisticsThreshold)
-                GUI.Label(GUIRect(), $"  {pair.Key}: {pair.Value}ms");
+                GUI.Label(GUIRect(), $"  {pair.Key}: {pair.Value:G4}ms");
         GUI.Label(GUIRect(), "OnFixedUpdate:");
         foreach (var pair in OnFixedUpdate.Statistics)
             if (pair.Value > StatisticsThreshold)
-                GUI.Label(GUIRect(), $"  {pair.Key}: {pair.Value}ms");
+                GUI.Label(GUIRect(), $"  {pair.Key}: {pair.Value:G4}ms");
     }
 
     static Rect GUIRect(float height = 0.025f)

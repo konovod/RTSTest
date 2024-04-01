@@ -80,9 +80,9 @@ namespace RTSToolkitFree
 
 		public int nation = 1;
 
-		private NavMeshAgent agent;
-		private Renderer renderer;
-		private StatusBar StatusBar;
+		[HideInInspector] public NavMeshAgent agent;
+		[HideInInspector] public Renderer renderer;
+		[HideInInspector] public StatusBar StatusBar;
 
 		void Start()
 		{

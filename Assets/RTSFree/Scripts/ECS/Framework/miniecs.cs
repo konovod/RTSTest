@@ -37,6 +37,11 @@ namespace ECS
       return World.GetStorage<T>().Has(Id);
     }
 
+    public bool Alive()
+    {
+      return World.Alive(Id);
+    }
+
     public readonly bool Has(Type type)
     {
       if (World.GetStorage(type) is IPool storage)
@@ -145,6 +150,15 @@ namespace ECS
       if (component_counts[id] == 0)
         component_counts.Remove(id);
     }
+
+    internal bool Alive(int id)
+    {
+      if (component_counts.TryGetValue(id, out var value))
+        return value > 0;
+      else
+        return false;
+    }
+
 
     internal Pool<T> GetStorage<T>() where T : struct
     {
@@ -609,11 +623,13 @@ namespace ECS
       i = 0;
       foreach (var child in children)
       {
-        Statistics[child.GetType().ToString()] = Timers[i].ElapsedTicks * 1000.0 / Stopwatch.Frequency;
+        var new_stat = Timers[i].ElapsedTicks * 1000.0 / Stopwatch.Frequency;
+        Statistics[child.GetType().ToString()] = Statistics[child.GetType().ToString()] * 0.9 + new_stat * 0.1;
         i += 1;
       }
       FullTimer.Stop();
-      Statistics["Total"] = FullTimer.ElapsedTicks * 1000.0 / Stopwatch.Frequency;
+      var new_total = FullTimer.ElapsedTicks * 1000.0 / Stopwatch.Frequency;
+      Statistics["Total"] = Statistics["Total"] * 0.9 + new_total * 0.1;
     }
     public override void Teardown()
     {

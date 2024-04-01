@@ -23,10 +23,10 @@ namespace RTSToolkitFree
 {
     public class KDTree
     {
-        public KDTree[] lr;
-        public Vector3 pivot;
-        public int pivotIndex;
-        public int axis;
+        KDTree[] lr;
+        Vector3 pivot;
+        int pivotIndex;
+        int axis;
 
         //	Change this value to 2 if you only need two-dimensional X,Y points. The search will
         //	be quicker in two dimensions.
@@ -51,7 +51,7 @@ namespace RTSToolkitFree
         }
 
         //	Make a new tree from a list of points.
-        public static KDTree MakeFromPointsC(params Vector3[] points)
+        static KDTree MakeFromPointsC(params Vector3[] points)
         {
             int[] indices = Iota(points.Length);
             return MakeFromPointsInner(0, 0, points.Length - 1, points, indices);
@@ -136,7 +136,7 @@ namespace RTSToolkitFree
 
         //	Find a new pivot index from the range by splitting the points that fall either side
         //	of its plane.
-        public static int FindPivotIndex(Vector3[] points, int[] inds, int stIndex, int enIndex, int axis)
+        static int FindPivotIndex(Vector3[] points, int[] inds, int stIndex, int enIndex, int axis)
         {
             int splitPoint = FindSplitPoint(points, inds, stIndex, enIndex, axis);
             // int splitPoint = Random.Range(stIndex, enIndex);
@@ -166,7 +166,7 @@ namespace RTSToolkitFree
             return currPt - 1;
         }
 
-        public static int[] Iota(int num)
+        static int[] Iota(int num)
         {
             int[] result = new int[num];
 
