@@ -87,7 +87,7 @@ namespace ECSGame
         }
         public override void Process(Entity e)
         {
-            var tree = e.Get<DistanceTree>();
+            ref var tree = ref e.GetRef<DistanceTree>();
             tree.targets.Clear();
             foreach (var unit in all_units)
             {

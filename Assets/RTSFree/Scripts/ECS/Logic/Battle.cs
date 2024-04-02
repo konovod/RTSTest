@@ -87,6 +87,7 @@ namespace ECSGame
             AttackTarget comp;
             comp.v = target;
             e.Set(comp);
+            e.Set(new ChangeColor(Color.yellow));
         }
     }
 
@@ -95,11 +96,12 @@ namespace ECSGame
         public RecolorUnit(ECS.World aworld) : base(aworld) { }
         public override ECS.Filter? Filter(ECS.World world)
         {
-            return world.Inc<ChangeColor>().Inc<LinkedComponent<Renderer>>();
+            return world.Inc<ChangeColor>();//.Inc<LinkedComponent<Renderer>>();
         }
         public override void Process(Entity e)
         {
             e.Get<LinkedComponent<Renderer>>().v.material.color = e.Get<ChangeColor>().v;
+
         }
     }
 
@@ -125,11 +127,11 @@ namespace ECSGame
             if (distance < stoppDistance)
             {
                 agent.SetDestination(transform.position);
-                e.Add(new ChangeColor(Color.red));
+                e.Set(new ChangeColor(Color.red));
             }
             else
             {
-                e.Add(new ChangeColor(Color.green));
+                e.Set(new ChangeColor(Color.green));
                 // начинаем двигаться
                 if (e.Has<Movable>())
                 {

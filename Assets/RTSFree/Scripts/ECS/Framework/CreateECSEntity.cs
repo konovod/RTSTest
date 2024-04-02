@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AI;
 using System;
 using ECS;
 using UnityECSLink;
@@ -32,6 +33,14 @@ namespace UnityECSLink
                 linked = gameObject.AddComponent<LinkedEntity>();
                 linked.entity = entity;
                 entity.Add(new LinkedGameObject(gameObject));
+                //TODO - some metaprogramming?
+                if (gameObject.TryGetComponent<NavMeshAgent>(out var comp))
+                    entity.Add(new LinkedComponent<NavMeshAgent>(comp));
+                if (gameObject.TryGetComponent<StatusBar>(out var comp2))
+                    entity.Add(new LinkedComponent<StatusBar>(comp2));
+                if (gameObject.TryGetComponent<Renderer>(out var comp3))
+                    entity.Add(new LinkedComponent<Renderer>(comp3));
+
             }
         }
     }
