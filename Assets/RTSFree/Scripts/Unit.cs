@@ -81,13 +81,13 @@ namespace RTSToolkitFree
 		public int nation = 1;
 
 		[HideInInspector] public NavMeshAgent agent;
-		[HideInInspector] public Renderer renderer;
+		[HideInInspector] public Renderer my_renderer;
 		[HideInInspector] public StatusBar StatusBar;
 
 		void Start()
 		{
 			agent = GetComponent<NavMeshAgent>();
-			renderer = GetComponent<Renderer>();
+			my_renderer = GetComponent<Renderer>();
 			StatusBar = GetComponentInChildren<StatusBar>();
 
 			if (agent != null)
@@ -353,7 +353,7 @@ namespace RTSToolkitFree
 		{
 			if (changeMaterial)
 			{
-				renderer.material.color = argColor;
+				my_renderer.material.color = argColor;
 			}
 		}
 

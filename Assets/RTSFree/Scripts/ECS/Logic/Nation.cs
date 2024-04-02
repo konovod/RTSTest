@@ -94,7 +94,7 @@ namespace ECSGame
                 if (unit.Get<UnitNation>().e.Id != e.Id)
                     tree.targets.Add(unit);
             }
-            tree.targetKD = RTSToolkitFree.KDTree.MakeFromPoints(tree.targets.Select((v) => v.Get<LinkedGameObject>().Obj.transform.position).ToArray());
+            tree.targetKD = RTSToolkitFree.KDTree.MakeFromPoints(tree.targets.Select((v) => v.Get<LinkedGameObject>().Transform().position).ToArray());
         }
     }
 

@@ -49,9 +49,9 @@ namespace ECSGame
         public override void Process(ECS.Entity e)
         {
             ref var spawner = ref e.GetRef<SpawnPoint>();
-            GameObject go = e.Get<UnityECSLink.LinkedGameObject>().Obj;
+            Transform transform = e.Get<UnityECSLink.LinkedGameObject>().Transform();
 
-            Quaternion rot = go.transform.rotation;
+            Quaternion rot = transform.rotation;
             if (spawner.randomizeRotation)
             {
                 rot = Quaternion.Euler(0f, UnityEngine.Random.Range(0f, 360f), 0f);
@@ -59,7 +59,7 @@ namespace ECSGame
 
             Vector2 randPos = UnityEngine.Random.insideUnitCircle * spawner.size;
 
-            Vector3 pos = go.transform.position + new Vector3(randPos.x, 0f, randPos.y) + go.transform.rotation * spawner.posOffset;
+            Vector3 pos = transform.position + new Vector3(randPos.x, 0f, randPos.y) + transform.rotation * spawner.posOffset;
             var ter = world.FirstComponent<Terrain>().ter;
             pos = TerrainVector(pos, ter);
 
