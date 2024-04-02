@@ -28,6 +28,8 @@ public class ECSWorldContainer : MonoBehaviour
         OnUpdate.Add(new ECSGame.UpdateSearchTree(world));
         OnUpdate.Add(new ECSGame.FindAttackTarget(world));
         OnUpdate.Add(new ECSGame.ApproachTarget(world));
+        OnUpdate.Add(new ECSGame.UnitAttackTargets(world));
+
 
         OnUpdate.Add(new ECSGame.RecolorUnit(world));
         OnUpdate.DelHere<ChangeColor>();

@@ -112,8 +112,8 @@ namespace ECSGame
             var target = e.Get<ShouldApproach>().target;
             var target_transform = target.Get<LinkedGameObject>().Transform();
 
-            agent.stoppingDistance = agent.radius / (transform.localScale.x) + target.Get<LinkedComponent<NavMeshAgent>>().v.radius / (target_transform.localScale.x);
-            float stoppDistance = (2f + transform.localScale.x * target_transform.localScale.x * agent.stoppingDistance);
+            agent.stoppingDistance = agent.radius / transform.localScale.x + target.Get<LinkedComponent<NavMeshAgent>>().v.radius / target_transform.localScale.x;
+            float stoppDistance = 2f + transform.localScale.x * target_transform.localScale.x * agent.stoppingDistance;
             var distance = (transform.position - target_transform.position).magnitude;
 
             // если приближающийся уже близок к своей цели
@@ -121,7 +121,7 @@ namespace ECSGame
             {
                 agent.SetDestination(transform.position);
                 e.Remove<ShouldApproach>();
-                e.Add(new ShouldAttack());
+                e.Add(new ShouldAttack(target));
                 e.Set(new ChangeColor(Color.yellow));
             }
             else
