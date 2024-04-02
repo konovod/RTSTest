@@ -62,10 +62,13 @@ namespace ECSGame
             if (targetId < 0)
             {
                 e.Set(new ChangeColor(Color.yellow));
+                e.RemoveIfPresent<ShouldApproach>();
+                e.RemoveIfPresent<ShouldAttack>();
                 return;
             }
             var target = tree.targets[targetId];
             e.Remove<ShouldFindTarget>();
+            e.RemoveIfPresent<ShouldAttack>();
             e.Set(new ShouldApproach(target));
             e.Set(new ChangeColor(Color.green));
         }

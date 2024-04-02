@@ -70,28 +70,10 @@ namespace ECSGame
             request.Template = spawner.objectToSpawn;
             created.Add(request);
 
-            // Unit instanceUp = instance.GetComponent<Unit>();
-
-            // if (instanceUp != null)
-            // {
-            //     if (instanceUp.nation >= BattleSystem.active.numberNations)
-            //     {
-            //         BattleSystem.active.AddNation();
-            //     }
-
-            //     instanceUp.isReady = true;
-
-            //     if (instanceUp.changeMaterial)
-            //     {
-            //         instanceUp.GetComponent<Renderer>().material.color = Color.yellow;
-            //     }
-            // }
-            // BattleSystem.active.allUnits.Add(instanceUp);
-
             spawner.numberOfObjects--;
             if (spawner.numberOfObjects <= 0)
             {
-                e.Destroy();
+                e.Remove<SpawnPoint>();
                 return;
             }
             e.Remove<LogicActive>();

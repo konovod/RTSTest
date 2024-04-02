@@ -19,7 +19,8 @@ namespace ECSGame
       OnUpdate.Add(new UnitAttackTargets(world));
       OnUpdate.Add(new ApplyDamage(world));
       OnUpdate.DelHere<AttackHit>();
-
+      OnUpdate.Add(new ProcessDeath(world));
+      OnUpdate.DelHere<StartDying>();
 
       OnUpdate.Add(new RecolorUnit(world));
       OnUpdate.DelHere<ChangeColor>();
