@@ -11,16 +11,6 @@ using UnityEngine.AI;
 namespace ECSGame
 {
 
-    [Serializable]
-    public struct AttackStats
-    {
-        public float strength;
-    }
-    [Serializable]
-    public struct DefenseStats
-    {
-        public float defence;
-    }
 
     [Serializable]
     public struct UnitNeedNation
@@ -71,16 +61,13 @@ namespace ECSGame
             var targetId = tree.targetKD.FindNearest(e.Get<LinkedGameObject>().Transform().position);
             if (targetId < 0)
             {
-                e.RemoveIfPresent<ShouldApproach>();
-                e.RemoveIfPresent<ShouldAttack>();
                 e.Set(new ChangeColor(Color.yellow));
                 return;
             }
             var target = tree.targets[targetId];
-            e.Set(new ChangeColor(Color.yellow));
             e.Remove<ShouldFindTarget>();
-            e.RemoveIfPresent<ShouldAttack>();
             e.Set(new ShouldApproach(target));
+            e.Set(new ChangeColor(Color.green));
         }
     }
 
@@ -103,7 +90,7 @@ namespace ECSGame
         public ApproachTarget(ECS.World aworld) : base(aworld) { }
         public override ECS.Filter? Filter(ECS.World world)
         {
-            return world.Inc<ShouldApproach>().Inc<Movable>();
+            return world.Inc<ShouldApproach>().Inc<Movable>().Inc<Alive>();
         }
         public override void Process(Entity e)
         {
@@ -122,19 +109,14 @@ namespace ECSGame
                 agent.SetDestination(transform.position);
                 e.Remove<ShouldApproach>();
                 e.Add(new ShouldAttack(target));
-                e.Set(new ChangeColor(Color.yellow));
+                e.Set(new ChangeColor(Color.red));
             }
             else
             {
-                e.Set(new ChangeColor(Color.green));
-                // начинаем двигаться
-                if (e.Has<Movable>())
+                if ((agent.destination - target_transform.position).sqrMagnitude > 1f)
                 {
-                    if ((agent.destination - target_transform.position).sqrMagnitude > 1f)
-                    {
-                        agent.SetDestination(target_transform.position);
-                        agent.speed = 3.5f;
-                    }
+                    agent.SetDestination(target_transform.position);
+                    agent.speed = 3.5f;
                 }
             }
         }

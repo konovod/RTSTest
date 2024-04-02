@@ -17,6 +17,8 @@ namespace ECSGame
       OnUpdate.Add(new FindAttackTarget(world));
       OnUpdate.Add(new ApproachTarget(world));
       OnUpdate.Add(new UnitAttackTargets(world));
+      OnUpdate.Add(new ApplyDamage(world));
+      OnUpdate.DelHere<AttackHit>();
 
 
       OnUpdate.Add(new RecolorUnit(world));
