@@ -11,11 +11,6 @@ using UnityEngine.AI;
 namespace ECSGame
 {
 
-    public struct AttackTarget
-    {
-        public Entity v;
-    }
-
     [Serializable]
     public struct AttackStats
     {
@@ -41,36 +36,32 @@ namespace ECSGame
     [Serializable]
     public struct Movable { }
 
-    [Serializable]
-    public struct Health
-    {
-        public int V;
-        public int Max;
-    }
-    public struct Alive { }
-    public struct Dying { }
-    public struct Rotting { }
-
-    public struct AttackHit
-    {
-        public int damage;
-        public Entity target;
-        public Entity source;
-    }
-
     public struct ChangeColor
     {
         public ChangeColor(Color color) { v = color; }
         public Color v;
     }
 
+    public struct ShouldAttack
+    {
+        public ShouldAttack(Entity whom) { target = whom; }
+        public Entity target;
+
+    }
+    public struct ShouldApproach
+    {
+        public ShouldApproach(Entity whom) { target = whom; }
+        public Entity target;
+
+    }
+    public struct ShouldFindTarget { }
 
     public class FindAttackTarget : ECS.System
     {
         public FindAttackTarget(ECS.World aworld) : base(aworld) { }
         public override ECS.Filter? Filter(ECS.World world)
         {
-            return world.Inc<Alive>().Inc<AttackStats>();
+            return world.Inc<Alive>().Inc<AttackStats>().Inc<ShouldFindTarget>();
         }
         public override void Process(Entity e)
         {
@@ -80,14 +71,16 @@ namespace ECSGame
             var targetId = tree.targetKD.FindNearest(e.Get<LinkedGameObject>().Transform().position);
             if (targetId < 0)
             {
-                e.RemoveIfPresent<AttackTarget>();
+                e.RemoveIfPresent<ShouldApproach>();
+                e.RemoveIfPresent<ShouldAttack>();
+                e.Set(new ChangeColor(Color.yellow));
                 return;
             }
             var target = tree.targets[targetId];
-            AttackTarget comp;
-            comp.v = target;
-            e.Set(comp);
             e.Set(new ChangeColor(Color.yellow));
+            e.Remove<ShouldFindTarget>();
+            e.RemoveIfPresent<ShouldAttack>();
+            e.Set(new ShouldApproach(target));
         }
     }
 
@@ -96,7 +89,7 @@ namespace ECSGame
         public RecolorUnit(ECS.World aworld) : base(aworld) { }
         public override ECS.Filter? Filter(ECS.World world)
         {
-            return world.Inc<ChangeColor>();//.Inc<LinkedComponent<Renderer>>();
+            return world.Inc<ChangeColor>().Inc<LinkedComponent<Renderer>>();
         }
         public override void Process(Entity e)
         {
@@ -110,13 +103,13 @@ namespace ECSGame
         public ApproachTarget(ECS.World aworld) : base(aworld) { }
         public override ECS.Filter? Filter(ECS.World world)
         {
-            return world.Inc<AttackStats>().Inc<AttackTarget>().Inc<LinkedComponent<NavMeshAgent>>();
+            return world.Inc<ShouldApproach>().Inc<Movable>();
         }
         public override void Process(Entity e)
         {
             var agent = e.Get<LinkedComponent<NavMeshAgent>>().v;
             var transform = e.Get<LinkedGameObject>().Transform();
-            var target = e.Get<AttackTarget>().v;
+            var target = e.Get<ShouldApproach>().target;
             var target_transform = target.Get<LinkedGameObject>().Transform();
 
             agent.stoppingDistance = agent.radius / (transform.localScale.x) + target.Get<LinkedComponent<NavMeshAgent>>().v.radius / (target_transform.localScale.x);
@@ -127,7 +120,9 @@ namespace ECSGame
             if (distance < stoppDistance)
             {
                 agent.SetDestination(transform.position);
-                e.Set(new ChangeColor(Color.red));
+                e.Remove<ShouldApproach>();
+                e.Add(new ShouldAttack());
+                e.Set(new ChangeColor(Color.yellow));
             }
             else
             {
