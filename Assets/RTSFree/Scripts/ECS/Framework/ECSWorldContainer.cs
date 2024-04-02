@@ -21,28 +21,9 @@ public class ECSWorldContainer : MonoBehaviour
     {
         Active = this;
         OnUpdate = new ECS.Systems(world);
-        ////////////////// add here systems that is called on Update
         OnUpdate.Add(new ProcessGameObjects(world));
-        OnUpdate.Add(new ECSGame.SpawnSystem(world));
-        OnUpdate.Add(new ECSGame.CreateNations(world));
-        OnUpdate.Add(new ECSGame.UpdateSearchTree(world));
-        OnUpdate.Add(new ECSGame.FindAttackTarget(world));
-        OnUpdate.Add(new ECSGame.ApproachTarget(world));
-        OnUpdate.Add(new ECSGame.UnitAttackTargets(world));
-
-
-        OnUpdate.Add(new ECSGame.RecolorUnit(world));
-        OnUpdate.DelHere<ChangeColor>();
-
         OnFixedUpdate = new ECS.Systems(world);
-        ////////////////// add here systems that is called on FixedUpdate
-        ///
-
-        ///
-        OnFixedUpdate.Add(new ProcessComponentRequests(world));
-        OnFixedUpdate.DelHere<RemoveRequest>();
-        OnFixedUpdate.DelHere<AddRequest>();
-
+        ECSGame.Config.InitSystems(world, OnUpdate, OnFixedUpdate);
     }
 
     void Start()

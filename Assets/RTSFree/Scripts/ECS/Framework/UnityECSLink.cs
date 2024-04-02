@@ -56,15 +56,7 @@ namespace UnityECSLink
         var info = ent.Get<InstantiateGameObject>();
         var obj = GameObject.Instantiate(info.Template, info.pos, info.rot);
         ent.Add(new LinkedGameObject(obj));
-        //TODO - some metaprogramming?
-        if (obj.TryGetComponent<NavMeshAgent>(out var comp))
-          ent.Add(new LinkedComponent<NavMeshAgent>(comp));
-        if (obj.TryGetComponent<StatusBar>(out var comp2))
-          ent.Add(new LinkedComponent<StatusBar>(comp2));
-        if (obj.TryGetComponent<Renderer>(out var comp3))
-          ent.Add(new LinkedComponent<Renderer>(comp3));
-
-
+        ECSGame.Config.LinkComponents(obj, ent);
         ent.Remove<InstantiateGameObject>();
         var ReverseLink = obj.AddComponent<LinkedEntity>();
         ReverseLink.entity = ent;
