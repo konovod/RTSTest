@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
 using UnityECSLink;
@@ -29,6 +27,8 @@ namespace ECSGame
 
       ///
 
+      UnityEngine.Random.InitState(0);
+      UnityEngine.AI.NavMesh.pathfindingIterationsPerFrame = 10000;
     }
     private static void Link<T>(GameObject gameObject, ECS.Entity entity) where T : Component
     {

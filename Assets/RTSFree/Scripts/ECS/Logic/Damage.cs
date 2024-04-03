@@ -2,9 +2,7 @@
 
 using System;
 using ECS;
-using RTSToolkitFree;
 using UnityECSLink;
-using UnityEditor.PackageManager;
 using UnityEngine;
 using UnityEngine.AI;
 

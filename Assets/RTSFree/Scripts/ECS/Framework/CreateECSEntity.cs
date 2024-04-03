@@ -1,12 +1,5 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.AI;
-using System;
-using ECS;
-using UnityECSLink;
-using Unity.VisualScripting;
-
 
 namespace UnityECSLink
 {

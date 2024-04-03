@@ -2,7 +2,6 @@
 
 using System;
 using ECS;
-using RTSToolkitFree;
 using UnityECSLink;
 using UnityEngine;
 using UnityEngine.AI;
@@ -74,7 +73,8 @@ namespace ECSGame
             e.Set(new ChangeColor(Color.green));
             var agent = e.Get<LinkedComponent<NavMeshAgent>>().v;
             var target_transform = target.Get<LinkedGameObject>().Transform();
-            agent.enabled = true;
+            if (!agent.enabled)
+                agent.enabled = true;
             agent.stoppingDistance = agent.radius / transform.localScale.x + target.Get<LinkedComponent<NavMeshAgent>>().v.radius / target_transform.localScale.x;
             e.GetRef<AttackStats>().distance = 2f + transform.localScale.x * target_transform.localScale.x * agent.stoppingDistance;
 

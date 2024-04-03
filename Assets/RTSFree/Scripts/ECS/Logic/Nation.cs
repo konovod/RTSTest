@@ -2,10 +2,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.Linq;
 using ECS;
-using Unity.VisualScripting;
 using UnityECSLink;
 using UnityEngine;
 

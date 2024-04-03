@@ -1,7 +1,4 @@
 using UnityEngine;
-using ECS;
-using System;
-using UnityEngine.AI;
 
 // ECS side of the link
 namespace UnityECSLink

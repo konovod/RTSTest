@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityECSLink;
-using ECSGame;
 
 //Контейнер для "мира" и систем ецс. Ставится на сцену в единственном экземлпяре 
 // В этот класс добавляются все системы игры
