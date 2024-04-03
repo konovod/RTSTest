@@ -64,6 +64,7 @@ namespace ECSGame
                 e.Remove<ShouldAttack>();
                 // e.Add(new ShouldFindTarget());
                 e.Add(new ShouldApproach(target));
+                e.Set(new ChangeColor(Color.green));
                 return;
             }
             var strength = e.Get<AttackStats>().strength;

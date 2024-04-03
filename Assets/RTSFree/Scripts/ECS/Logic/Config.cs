@@ -25,12 +25,9 @@ namespace ECSGame
       OnUpdate.Add(new RecolorUnit(world));
       OnUpdate.DelHere<ChangeColor>();
       ////////////////// add here systems that is called on FixedUpdate
-      ///
+      // OnFixedUpdate.Add(new ExampleFixedSystem(world));
 
       ///
-      OnFixedUpdate.Add(new ProcessComponentRequests(world));
-      OnFixedUpdate.DelHere<RemoveRequest>();
-      OnFixedUpdate.DelHere<AddRequest>();
 
     }
     private static void Link<T>(GameObject gameObject, ECS.Entity entity) where T : Component

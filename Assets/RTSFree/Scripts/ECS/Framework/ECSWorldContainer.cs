@@ -24,6 +24,9 @@ public class ECSWorldContainer : MonoBehaviour
         OnUpdate.Add(new ProcessGameObjects(world));
         OnFixedUpdate = new ECS.Systems(world);
         ECSGame.Config.InitSystems(world, OnUpdate, OnFixedUpdate);
+        OnFixedUpdate.Add(new ProcessComponentRequests(world));
+        OnFixedUpdate.DelHere<RemoveRequest>();
+        OnFixedUpdate.DelHere<AddRequest>();
     }
 
     void Start()
