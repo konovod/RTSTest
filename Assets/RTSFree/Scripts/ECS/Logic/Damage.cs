@@ -15,6 +15,7 @@ namespace ECSGame
     public struct AttackStats
     {
         public float strength;
+        public float distance;
     }
     [Serializable]
     public struct DefenseStats
@@ -58,7 +59,7 @@ namespace ECSGame
             var target = e.Get<ShouldAttack>().target;
             var target_transform = target.Get<LinkedGameObject>().Transform();
             var distance = (transform.position - target_transform.position).magnitude;
-            var attack_distance = 2f + transform.localScale.x * target_transform.localScale.x * e.Get<LinkedComponent<NavMeshAgent>>().v.stoppingDistance;
+            var attack_distance = e.Get<AttackStats>().distance;
             if (distance > attack_distance)
             {
                 e.Remove<ShouldAttack>();

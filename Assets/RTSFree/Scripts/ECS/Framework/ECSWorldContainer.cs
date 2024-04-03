@@ -17,6 +17,10 @@ public class ECSWorldContainer : MonoBehaviour
     public bool ShowStatistics;
     public float StatisticsThreshold;
 
+    [SerializeField]
+    public List<string> DebugStatistics = new();
+
+
     void Awake()
     {
         Active = this;
@@ -52,21 +56,23 @@ public class ECSWorldContainer : MonoBehaviour
         if (!ShowStatistics)
             return;
         GuiPos = 0;
-        GUI.Label(GUIRect(), $"Entities: n={world.EntitiesCount()}");
-        GUI.Label(GUIRect(), "OnUpdate:");
+        DebugStatistics.Clear();
+        AddLabel($"Entities: n={world.EntitiesCount()}");
+        AddLabel("OnUpdate:");
         foreach (var pair in OnUpdate.Statistics)
             if (pair.Value > StatisticsThreshold)
-                GUI.Label(GUIRect(), $"  {pair.Key}: {pair.Value:G4}ms");
-        GUI.Label(GUIRect(), "OnFixedUpdate:");
+                AddLabel($"  {pair.Key}: {pair.Value:G4}ms");
+        AddLabel("OnFixedUpdate:");
         foreach (var pair in OnFixedUpdate.Statistics)
             if (pair.Value > StatisticsThreshold)
-                GUI.Label(GUIRect(), $"  {pair.Key}: {pair.Value:G4}ms");
+                AddLabel($"  {pair.Key}: {pair.Value:G4}ms");
     }
 
-    static Rect GUIRect(float height = 0.025f)
+    void AddLabel(string text, float height = 0.025f)
     {
         GuiPos += height;
-        return new Rect(Screen.width * 0.05f, Screen.height * GuiPos, 500f, 20f);
+        GUI.Label(new Rect(Screen.width * 0.05f, Screen.height * GuiPos, 500f, 20f), text);
+        DebugStatistics.Add(text);
     }
 
 }

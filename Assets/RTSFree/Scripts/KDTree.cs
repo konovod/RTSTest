@@ -30,7 +30,7 @@ namespace RTSToolkitFree
 
         //	Change this value to 2 if you only need two-dimensional X,Y points. The search will
         //	be quicker in two dimensions.
-        const int numDims = 3;
+        const int numDims = 2;
 
         public KDTree()
         {

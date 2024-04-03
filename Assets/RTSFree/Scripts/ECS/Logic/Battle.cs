@@ -58,7 +58,8 @@ namespace ECSGame
             if (!e.Has<UnitNation>())
                 return;
             var tree = e.Get<UnitNation>().e.Get<DistanceTree>();
-            var targetId = tree.targetKD.FindNearest(e.Get<LinkedGameObject>().Transform().position);
+            var transform = e.Get<LinkedGameObject>().Transform();
+            var targetId = tree.targetKD.FindNearest(transform.position);
             if (targetId < 0)
             {
                 e.Set(new ChangeColor(Color.yellow));
@@ -71,7 +72,12 @@ namespace ECSGame
             e.RemoveIfPresent<ShouldAttack>();
             e.Set(new ShouldApproach(target));
             e.Set(new ChangeColor(Color.green));
-            e.Get<LinkedComponent<NavMeshAgent>>().v.enabled = true;
+            var agent = e.Get<LinkedComponent<NavMeshAgent>>().v;
+            var target_transform = target.Get<LinkedGameObject>().Transform();
+            agent.enabled = true;
+            agent.stoppingDistance = agent.radius / transform.localScale.x + target.Get<LinkedComponent<NavMeshAgent>>().v.radius / target_transform.localScale.x;
+            e.GetRef<AttackStats>().distance = 2f + transform.localScale.x * target_transform.localScale.x * agent.stoppingDistance;
+
         }
     }
 
@@ -102,9 +108,7 @@ namespace ECSGame
             var transform = e.Get<LinkedGameObject>().Transform();
             var target = e.Get<ShouldApproach>().target;
             var target_transform = target.Get<LinkedGameObject>().Transform();
-
-            agent.stoppingDistance = 4f;//agent.radius / transform.localScale.x + target.Get<LinkedComponent<NavMeshAgent>>().v.radius / target_transform.localScale.x;
-            float stoppDistance = 2f + transform.localScale.x * target_transform.localScale.x * agent.stoppingDistance;
+            float stoppDistance = e.Get<AttackStats>().distance;
             var distance = (transform.position - target_transform.position).magnitude;
 
             // если приближающийся уже близок к своей цели
@@ -117,7 +121,7 @@ namespace ECSGame
             }
             else
             {
-                if ((agent.destination - target_transform.position).sqrMagnitude > MathF.Min(1f, distance * 0.1f))
+                if ((agent.destination - target_transform.position).sqrMagnitude > MathF.Max(1f, distance * 0.1f))
                 {
                     agent.SetDestination(target_transform.position);
                     // agent.speed = 3.5f;
