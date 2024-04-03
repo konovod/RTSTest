@@ -71,6 +71,7 @@ namespace ECSGame
             e.RemoveIfPresent<ShouldAttack>();
             e.Set(new ShouldApproach(target));
             e.Set(new ChangeColor(Color.green));
+            e.Get<LinkedComponent<NavMeshAgent>>().v.enabled = true;
         }
     }
 
@@ -102,7 +103,7 @@ namespace ECSGame
             var target = e.Get<ShouldApproach>().target;
             var target_transform = target.Get<LinkedGameObject>().Transform();
 
-            agent.stoppingDistance = agent.radius / transform.localScale.x + target.Get<LinkedComponent<NavMeshAgent>>().v.radius / target_transform.localScale.x;
+            agent.stoppingDistance = 4f;//agent.radius / transform.localScale.x + target.Get<LinkedComponent<NavMeshAgent>>().v.radius / target_transform.localScale.x;
             float stoppDistance = 2f + transform.localScale.x * target_transform.localScale.x * agent.stoppingDistance;
             var distance = (transform.position - target_transform.position).magnitude;
 
@@ -116,10 +117,10 @@ namespace ECSGame
             }
             else
             {
-                if ((agent.destination - target_transform.position).sqrMagnitude > 1f)
+                if ((agent.destination - target_transform.position).sqrMagnitude > MathF.Min(1f, distance * 0.1f))
                 {
                     agent.SetDestination(target_transform.position);
-                    agent.speed = 3.5f;
+                    // agent.speed = 3.5f;
                 }
             }
         }

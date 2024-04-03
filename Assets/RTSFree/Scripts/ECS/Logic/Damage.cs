@@ -62,7 +62,8 @@ namespace ECSGame
             if (distance > attack_distance)
             {
                 e.Remove<ShouldAttack>();
-                e.Add(new ShouldFindTarget());
+                // e.Add(new ShouldFindTarget());
+                e.Add(new ShouldApproach(target));
                 return;
             }
             var strength = e.Get<AttackStats>().strength;
