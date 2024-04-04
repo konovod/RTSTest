@@ -1,4 +1,4 @@
-namespace ECSGame
+namespace ECSProviders
 {
-    public class MaxHealthProvider : UnityECSLink.ComponentProvider<MaxHealth> { }
+    public class MaxHealthProvider : UnityECSLink.ComponentProvider<ECSGame.MaxHealth> { }
 }
