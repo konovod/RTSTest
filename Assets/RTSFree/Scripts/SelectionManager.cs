@@ -85,6 +85,13 @@ namespace RTSToolkitFree
                 backupRect.height = 0;
                 marqueeSize = Vector2.zero;
             }
+
+            if (Input.GetMouseButtonUp(1))
+            {
+                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+                if (Physics.Raycast(ray, out RaycastHit hit))
+                    ECSWorldContainer.Active.world.NewEntity().Add(new ECSGame.ManualTarget(hit.point));
+            }
         }
     }
 }

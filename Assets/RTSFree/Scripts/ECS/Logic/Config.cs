@@ -23,6 +23,8 @@ namespace ECSGame
       OnUpdate.Add(new ProcessRotting(world));
       OnUpdate.Add(new SelectUnits(world));
       OnUpdate.DelHere<JustSelected>();
+      OnUpdate.Add(new TargetSelectedUnits(world));
+      OnUpdate.DelHere<ManualTarget>();
 
 
       OnUpdate.Add(new RecolorUnit(world));

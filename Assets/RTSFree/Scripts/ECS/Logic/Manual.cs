@@ -18,6 +18,12 @@ namespace ECSGame
   public struct ManualTarget
   {
     public Vector3 v;
+    public ManualTarget(Vector3 target) { v = target; }
+  }
+  public struct UnitCommand
+  {
+    public Vector3 v;
+    public UnitCommand(Vector3 target) { v = target; }
   }
 
   public class SelectUnits : ECS.System
@@ -45,6 +51,26 @@ namespace ECSGame
       e.Get<LinkedComponent<StatusBar>>().v.SelectView.SetActive(true);
     }
 
+  }
+
+
+
+  public class TargetSelectedUnits : ECS.System
+  {
+    public TargetSelectedUnits(ECS.World aworld) : base(aworld) { }
+
+    public override ECS.Filter? Filter(ECS.World world)
+    {
+      return world.Inc<ManualTarget>();
+    }
+
+
+    public override void Process(ECS.Entity e)
+    {
+      var target = e.Get<ManualTarget>().v;
+      foreach (var unit in world.Each<IsSelected>())
+        unit.Set(new UnitCommand(target));
+    }
   }
 
 
