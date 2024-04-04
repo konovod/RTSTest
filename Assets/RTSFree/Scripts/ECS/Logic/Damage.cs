@@ -107,7 +107,7 @@ namespace ECSGame
 
     public class ProcessDeath : ECS.System
     {
-        public ProcessDeath(ECS.World aworld) : base(aworld) { aworld.GetStorage<DestroyGameObject>(); }
+        public ProcessDeath(ECS.World aworld) : base(aworld) { aworld.GetStorage<Rotting>(); }
         public override ECS.Filter? Filter(ECS.World world)
         {
             return world.Inc<StartDying>();
@@ -125,11 +125,33 @@ namespace ECSGame
                 if (attacker.Get<ShouldAttack>().target.Id == e.Id)
                     attacker.Add(new ShouldFindTarget());
             AddRequest add_request;
-            add_request.Component = typeof(DestroyGameObject);
+            add_request.Component = typeof(Rotting);
             add_request.Entity = e;
             add_request.time = world.FirstComponent<UnityECSLink.GlobalTime>().Time + 5;
             world.NewEntity().Add(add_request);
 
+        }
+    }
+
+    public class ProcessRotting : ECS.System
+    {
+        public ProcessRotting(ECS.World aworld) : base(aworld) { }
+        public override ECS.Filter? Filter(ECS.World world)
+        {
+            return world.Inc<Rotting>().Inc<LogicActive>();
+        }
+        public override void Process(Entity e)
+        {
+            e.Set(new ChangeColor(new Color((148.0f / 255.0f), (0.0f / 255.0f), (211.0f / 255.0f), 1.0f)));
+            var transform = e.Get<LinkedGameObject>().Obj.transform;
+            if (transform.position.y > -1.0f)
+            {
+                float sinkSpeed = -0.2f;
+                transform.position += new Vector3(0f, sinkSpeed, 0f);
+                LogicActive.WaitFor(e, 0.1f);
+            }
+            else
+                e.Add(new DestroyGameObject());
         }
     }
 }

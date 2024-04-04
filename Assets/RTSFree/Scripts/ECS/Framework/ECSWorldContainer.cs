@@ -38,9 +38,11 @@ public class ECSWorldContainer : MonoBehaviour
         OnFixedUpdate.Init();
     }
 
+    float frame_time = 0f;
     void Update()
     {
         OnUpdate.Execute();
+        frame_time = Time.deltaTime * 1000;
     }
 
     void FixedUpdate()
@@ -57,6 +59,7 @@ public class ECSWorldContainer : MonoBehaviour
         GuiPos = 0;
         DebugStatistics.Clear();
         AddLabel($"Entities: n={world.EntitiesCount()}");
+        AddLabel($"Frame time: {frame_time:G4} ms");
         AddLabel("OnUpdate:");
         foreach (var pair in OnUpdate.Statistics)
             if (pair.Value > StatisticsThreshold)
