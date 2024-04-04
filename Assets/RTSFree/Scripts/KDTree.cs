@@ -17,6 +17,8 @@
 
 //  Adopted to meet project needs by chanfort.
 
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace RTSToolkitFree
@@ -37,14 +39,16 @@ namespace RTSToolkitFree
             lr = new KDTree[2];
         }
 
-        public static KDTree MakeFromPoints(params Vector3[] pointss)
+        public static KDTree MakeFromPoints(IEnumerable<Vector3> pointss)
         {
-            Vector3[] points = new Vector3[pointss.Length + 1];
+            Vector3[] points = new Vector3[pointss.Count() + 1];
 
             points[0] = new Vector3(-999999999999.99f, -999999999999.99f, -999999999999.99f);
-            for (int i = 1; i < points.Length; i++)
+            var i = 1;
+            foreach (var pt in pointss)
             {
-                points[i] = pointss[i - 1];
+                points[i] = pt;
+                i++;
             }
 
             return MakeFromPointsC(points);
@@ -58,7 +62,7 @@ namespace RTSToolkitFree
         }
 
         //	Recursively build a tree by separating points at plane boundaries.
-        static KDTree MakeFromPointsInner(
+        public static KDTree MakeFromPointsInner(
             int depth,
             int stIndex, int enIndex,
             Vector3[] points,
