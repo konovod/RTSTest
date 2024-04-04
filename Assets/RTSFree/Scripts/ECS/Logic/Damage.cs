@@ -80,6 +80,27 @@ namespace ECSGame
         }
     }
 
+    public class RespondToAttacks : ECS.System
+    {
+        public RespondToAttacks(ECS.World aworld) : base(aworld) { }
+        public override ECS.Filter? Filter(ECS.World world)
+        {
+            return world.Inc<AttackHit>();
+        }
+        public override void Process(Entity e)
+        {
+            var hit = e.Get<AttackHit>();
+            var target = hit.target;
+            if (target.Has<ShouldApproach>())
+            {
+                target.GetRef<ShouldApproach>().target = hit.source;
+            }
+        }
+
+    }
+
+
+
     public class ApplyDamage : ECS.System
     {
         public ApplyDamage(ECS.World aworld) : base(aworld) { }
