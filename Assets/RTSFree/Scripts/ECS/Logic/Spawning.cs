@@ -1,6 +1,7 @@
 #nullable enable
 
 using System;
+using ECS;
 using UnityEngine;
 
 
@@ -9,6 +10,17 @@ namespace ECSGame
 
     public struct LogicActive
     {
+
+        public static void WaitFor(Entity e, float time)
+        {
+            e.Remove<LogicActive>();
+            UnityECSLink.AddRequest add_request;
+            add_request.Component = typeof(LogicActive);
+            add_request.Entity = e;
+            add_request.time = e.World.FirstComponent<UnityECSLink.GlobalTime>().Time + time;
+            e.World.NewEntity().Add(add_request);
+
+        }
 
     }
 
@@ -75,12 +87,7 @@ namespace ECSGame
                 e.Remove<SpawnPoint>();
                 return;
             }
-            e.Remove<LogicActive>();
-            UnityECSLink.AddRequest add_request;
-            add_request.Component = typeof(LogicActive);
-            add_request.Entity = e;
-            add_request.time = world.FirstComponent<UnityECSLink.GlobalTime>().Time + spawner.timestep;
-            world.NewEntity().Add(add_request);
+            LogicActive.WaitFor(e, spawner.timestep);
         }
 
         Vector3 TerrainVector(Vector3 origin, UnityEngine.Terrain ter1)

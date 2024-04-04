@@ -51,7 +51,7 @@ namespace ECSGame
         public FindAttackTarget(ECS.World aworld) : base(aworld) { }
         public override ECS.Filter? Filter(ECS.World world)
         {
-            return world.Inc<Alive>().Inc<AttackStats>().Inc<ShouldFindTarget>();
+            return world.Inc<Alive>().Inc<AttackStats>().Inc<ShouldFindTarget>().Inc<LogicActive>();
         }
         public override void Process(Entity e)
         {
@@ -78,7 +78,7 @@ namespace ECSGame
                 agent.enabled = true;
             agent.stoppingDistance = agent.radius / transform.localScale.x + target.Get<LinkedComponent<NavMeshAgent>>().v.radius / target_transform.localScale.x;
             e.GetRef<AttackStats>().distance = 2f + transform.localScale.x * target_transform.localScale.x * agent.stoppingDistance;
-
+            LogicActive.WaitFor(e, UnityEngine.Random.Range(0.5f, 1f));
         }
     }
 
@@ -101,7 +101,7 @@ namespace ECSGame
         public ApproachTarget(ECS.World aworld) : base(aworld) { }
         public override ECS.Filter? Filter(ECS.World world)
         {
-            return world.Inc<ShouldApproach>().Inc<Movable>().Inc<Alive>();
+            return world.Inc<ShouldApproach>().Inc<Movable>().Inc<Alive>().Inc<LogicActive>();
         }
         public override void Process(Entity e)
         {
