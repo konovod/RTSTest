@@ -5,6 +5,7 @@ using ECS;
 using UnityECSLink;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.UIElements;
 
 
 namespace ECSGame
@@ -119,13 +120,9 @@ namespace ECSGame
                 e.Add(new ShouldAttack(target));
                 e.Set(new ChangeColor(Color.red));
             }
-            else
+            else if ((agent.destination - target_transform.position).sqrMagnitude > MathF.Max(1f, distance * distance * 0.01f))
             {
-                if ((agent.destination - target_transform.position).sqrMagnitude > MathF.Max(1f, distance * 0.1f))
-                {
-                    agent.SetDestination(target_transform.position);
-                    // agent.speed = 3.5f;
-                }
+                agent.SetDestination(target_transform.position);
             }
         }
     }
