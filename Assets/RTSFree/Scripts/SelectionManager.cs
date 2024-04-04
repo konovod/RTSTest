@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 
 namespace RTSToolkitFree
 {
@@ -29,24 +30,8 @@ namespace RTSToolkitFree
         {
             if (Input.GetMouseButtonDown(0))
             {
-                //Poppulate the selectableUnits array with all the selectable units that exist
-
                 float _invertedY = Screen.height - Input.mousePosition.y;
                 marqueeOrigin = new Vector2(Input.mousePosition.x, _invertedY);
-
-                //Check if the player just wants to select a single unit opposed to drawing a marquee and selecting a range of units
-                Vector3 camPos = Camera.main.transform.position;
-
-                for (int i = 0; i < BattleSystem.active.allUnits.Count; i++)
-                {
-                    Unit up = BattleSystem.active.allUnits[i];
-                    ManualControl manualControl = up.GetComponent<ManualControl>();
-
-                    if (manualControl != null)
-                    {
-                        manualControl.IsSelected = false;
-                    }
-                }
             }
 
             if (Input.GetMouseButton(0))
@@ -73,31 +58,16 @@ namespace RTSToolkitFree
             {
                 if (!selectedByClickRunning)
                 {
-                    for (int i = 0; i < BattleSystem.active.allUnits.Count; i++)
+                    foreach (var unit in ECSWorldContainer.Active.world.Each<ECSGame.Controllable>())
                     {
-                        Unit up = BattleSystem.active.allUnits[i];
 
                         //Convert the world position of the unit to a screen position and then to a GUI point
-                        Vector3 screenPos = Camera.main.WorldToScreenPoint(up.transform.position);
+                        Vector3 screenPos = Camera.main.WorldToScreenPoint(unit.Get<UnityECSLink.LinkedGameObject>().Transform().position);
                         Vector2 screenPoint = new Vector2(screenPos.x, Screen.height - screenPos.y);
 
                         if (marqueeRect.Contains(screenPoint) || backupRect.Contains(screenPoint))
                         {
-                            Unit unit = up.GetComponent<Unit>();
-
-                            if (
-                                unit.nation == BattleSystem.active.playerNation &&
-                                unit.isMovable &&
-                                unit.Health > 0f
-                            )
-                            {
-                                ManualControl manualControl = up.GetComponent<ManualControl>();
-
-                                if (manualControl != null)
-                                {
-                                    manualControl.IsSelected = true;
-                                }
-                            }
+                            unit.Set(new ECSGame.JustSelected());
                         }
                     }
 
@@ -106,9 +76,7 @@ namespace RTSToolkitFree
                 selectedByClickRunning = false;
             }
 
-			CheckForUnitCommands();
-
-			if (Input.GetMouseButtonUp(0))
+            if (Input.GetMouseButtonUp(0))
             {
                 //Reset the marquee so it no longer appears on the screen.
                 marqueeRect.width = 0;
@@ -118,47 +86,5 @@ namespace RTSToolkitFree
                 marqueeSize = Vector2.zero;
             }
         }
-
-        
-
-
-		void CheckForUnitCommands()
-        {
-            if (Input.GetMouseButtonUp(1))
-            {
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                RaycastHit hit;
-
-                if (Physics.Raycast(ray, out hit))
-                {
-                    for (int i = 0; i < BattleSystem.active.allUnits.Count; i++)
-                    {
-                        Unit up = BattleSystem.active.allUnits[i];
-                        ManualControl manualControl = up.GetComponent<ManualControl>();
-
-                        if (manualControl != null && manualControl.IsSelected && up.nation == BattleSystem.active.playerNation)
-                        {
-                            manualControl.manualDestination = hit.point;
-
-                            if (manualControl.moveCoroutine != null)
-                            { 
-                                StopCoroutine(manualControl.moveCoroutine);
-                            }
-                            manualControl.moveCoroutine = StartCoroutine(manualControl.Move());
-
-                            if (up.target != null)
-                            {
-                                Unit currentTarget = up.target.GetComponent<Unit>();
-                                currentTarget.attackers.Remove(up);
-                                //currentTarget.noAttackers = currentTarget.attackers.Count;
-                                up.target = null;
-                            }
-
-                        }
-                    }
-                }
-            }
-        }
-        
     }
 }

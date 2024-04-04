@@ -21,6 +21,8 @@ namespace ECSGame
       OnUpdate.Add(new ProcessDeath(world));
       OnUpdate.DelHere<StartDying>();
       OnUpdate.Add(new ProcessRotting(world));
+      OnUpdate.Add(new SelectUnits(world));
+      OnUpdate.DelHere<JustSelected>();
 
 
       OnUpdate.Add(new RecolorUnit(world));
@@ -38,13 +40,18 @@ namespace ECSGame
       if (gameObject.TryGetComponent<T>(out T comp))
         entity.Add(new LinkedComponent<T>(comp));
     }
-
+    private static void LinkChild<T>(GameObject gameObject, ECS.Entity entity) where T : Component
+    {
+      var comp = gameObject.GetComponentInChildren<T>();
+      if (comp != null)
+        entity.Add(new LinkedComponent<T>(comp));
+    }
     public static void LinkComponents(GameObject gameObject, ECS.Entity entity)
     {
       //TODO - some metaprogramming?
       Link<NavMeshAgent>(gameObject, entity);
-      Link<StatusBar>(gameObject, entity);
       Link<Renderer>(gameObject, entity);
+      LinkChild<StatusBar>(gameObject, entity);
     }
   }
 }
