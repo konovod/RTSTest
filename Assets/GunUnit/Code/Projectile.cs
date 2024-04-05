@@ -3,6 +3,8 @@
 
 using System.Collections;
 using System.Collections.Generic;
+using ECSGame;
+using UnityECSLink;
 using UnityEngine;
 
 namespace RTSToolkitFree
@@ -28,11 +30,14 @@ namespace RTSToolkitFree
 
         void OnCollisionEnter(Collision collision)
         {
-            IHealth health = collision.gameObject.GetComponent<IHealth>();
-            if (health != null ) 
-            { 
-                health.ApplyDamage(damageValue);
-            }
+            // LinkedEntity linked = collision.gameObject.GetComponent<LinkedEntity>();
+            // if (linked != null ) 
+            // { 
+            //     AttackHit hit;
+            //     hit.source = ;
+            //     hit.target = linked.entity;
+            //     linked.AddApplyDamage(damageValue);
+            // }
 
 
             // Instantiate the collision particle

@@ -25,14 +25,14 @@ public class Defender_AI : MonoBehaviour
     private Weapon weapon;
 
     void Start()
-    { 
+    {
         weapon = GetComponent<Weapon>();
         StartCoroutine(Control());
     }
 
 
 
-	IEnumerator Control()
+    IEnumerator Control()
     {
         // Save the original rotation of the gun head
         originalRotation = gunHead.localRotation.eulerAngles;
@@ -42,19 +42,19 @@ public class Defender_AI : MonoBehaviour
             // Find the closest enemy
             target = FindClosestEnemy();
 
-            if(weapon != null && target != null)
+            if (weapon != null && target != null)
             {
                 // Check that the distance from the enemy is in the shooting distance range
                 if (Vector3.Distance(transform.position, target.position) <= shootingDistance)
                 {
-					// Start attach
-					weapon.canShoot = true;
+                    // Start attach
+                    weapon.canShoot = true;
                     isActive = true;
                 }
                 else
                 {
-					// Stop attach
-					weapon.canShoot = false;
+                    // Stop attach
+                    weapon.canShoot = false;
                     isActive = false;
                 }
             }
@@ -91,14 +91,14 @@ public class Defender_AI : MonoBehaviour
 
     Transform FindClosestEnemy()
     {
-		Transform closest = null;
-		Unit unit = BattleSystem.active.FindNearest(1, transform.position);
-        if (unit != null)
-        { 
-            closest = unit.transform;
-        }
-		return closest;
-	}
+        Transform closest = null;
+        // Unit unit = BattleSystem.active.FindNearest(1, transform.position);
+        // if (unit != null)
+        // { 
+        //     closest = unit.transform;
+        // }
+        return closest;
+    }
 
 
 }
