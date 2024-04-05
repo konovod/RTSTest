@@ -77,6 +77,7 @@ namespace ECSGame
         {
           var agent = unit.Get<LinkedComponent<NavMeshAgent>>().v;
           agent.SetDestination(target);
+          agent.stoppingDistance = 1f;
         }
       }
 
@@ -109,11 +110,28 @@ namespace ECSGame
     public CheckUnitCommandStatus(ECS.World aworld) : base(aworld) { }
     public override ECS.Filter? Filter(ECS.World world)
     {
-      return world.Inc<UnitCommandStatus>().Exc<IsSelected>();
+      return world.Inc<UnitCommandStatus>().Inc<LogicActive>();
     }
     public override void Process(Entity e)
     {
-      // var distance = (transform.position - manualDestination).magnitude;
+      var distance = (e.Get<Position>().v - e.Get<UnitCommand>().v).magnitude;
+      ref var status = ref e.GetRef<UnitCommandStatus>();
+      if (!e.Has<IsSelected>() && (distance >= status.prev_distance || distance < 2f))
+      {
+        status.fails++;
+        if (status.fails > 10)
+        {
+          e.Remove<UnitCommand>();
+          e.Remove<UnitCommandStatus>();
+          e.RemoveIfPresent<ShouldApproach>();
+          e.RemoveIfPresent<ShouldAttack>();
+          e.Set(new ShouldFindTarget());
+        }
+      }
+      // else status.fails--;
+      status.prev_distance = distance;
+
+      LogicActive.WaitFor(e, 0.1f);
     }
   }
 

@@ -26,6 +26,7 @@ namespace ECSGame
       OnUpdate.Add(new SelectUnits(world));
       OnUpdate.DelHere<JustSelected>();
       OnUpdate.Add(new TargetSelectedUnits(world));
+      OnUpdate.Add(new CheckUnitCommandStatus(world));
       OnUpdate.DelHere<ManualTarget>();
 
 
