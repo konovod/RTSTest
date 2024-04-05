@@ -10,8 +10,6 @@ using UnityEngine.UIElements;
 
 namespace ECSGame
 {
-
-
     [Serializable]
     public struct UnitNeedNation
     {

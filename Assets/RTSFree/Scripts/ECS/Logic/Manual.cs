@@ -123,9 +123,6 @@ namespace ECSGame
         {
           e.Remove<UnitCommand>();
           e.Remove<UnitCommandStatus>();
-          e.RemoveIfPresent<ShouldApproach>();
-          e.RemoveIfPresent<ShouldAttack>();
-          e.Set(new ShouldFindTarget());
         }
       }
       // else status.fails--;

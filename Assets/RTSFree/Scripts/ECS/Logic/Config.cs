@@ -17,7 +17,6 @@ namespace ECSGame
       OnUpdate.Add(new ApproachTarget(world));
       OnUpdate.Add(new UnitAttackTargets(world));
       OnUpdate.Add(new ApplyDamage(world));
-      OnUpdate.Add(new RespondToAttacks(world));
       OnUpdate.DelHere<AttackHit>();
       OnUpdate.Add(new DeselectOnDeath(world));
       OnUpdate.Add(new ProcessDeath(world));

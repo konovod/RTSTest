@@ -54,15 +54,13 @@ namespace ECSGame
         public override void Process(Entity e)
         {
             var position = e.Get<Position>().v;
-            var target = e.Get<ShouldAttack>().target;
+            var target = e.Get<HasTarget>().v;
             var target_position = target.Get<Position>().v;
             var distance = (position - target_position).magnitude;
             var attack_distance = e.Get<AttackStats>().distance;
             if (distance > attack_distance)
             {
                 e.Remove<ShouldAttack>();
-                // e.Add(new ShouldFindTarget());
-                e.Add(new ShouldApproach(target));
                 e.Set(new ChangeColor(Color.green));
                 return;
             }
@@ -79,27 +77,6 @@ namespace ECSGame
             }
         }
     }
-
-    public class RespondToAttacks : ECS.System
-    {
-        public RespondToAttacks(ECS.World aworld) : base(aworld) { }
-        public override ECS.Filter? Filter(ECS.World world)
-        {
-            return world.Inc<AttackHit>();
-        }
-        public override void Process(Entity e)
-        {
-            var hit = e.Get<AttackHit>();
-            var target = hit.target;
-            if (target.Has<ShouldApproach>())
-            {
-                target.GetRef<ShouldApproach>().target = hit.source;
-            }
-        }
-
-    }
-
-
 
     public class ApplyDamage : ECS.System
     {
@@ -139,17 +116,10 @@ namespace ECSGame
             e.Add(new Dying());
             e.Set(new ChangeColor(Color.blue));
             e.Get<LinkedComponent<NavMeshAgent>>().v.enabled = false;
-            foreach (var attacker in world.Each<ShouldApproach>())
-                if (attacker.Get<ShouldApproach>().target.Id == e.Id)
+            foreach (var attacker in world.Each<HasTarget>())
+                if (attacker.Get<HasTarget>().v.Id == e.Id)
                 {
-                    attacker.Add(new ShouldFindTarget());
-                    attacker.Remove<ShouldApproach>();
-                }
-            foreach (var attacker in world.Each<ShouldAttack>())
-                if (attacker.Get<ShouldAttack>().target.Id == e.Id)
-                {
-                    attacker.Add(new ShouldFindTarget());
-                    attacker.Remove<ShouldAttack>();
+                    attacker.Remove<HasTarget>();
                 }
             AddRequest add_request;
             add_request.Component = typeof(Rotting);
