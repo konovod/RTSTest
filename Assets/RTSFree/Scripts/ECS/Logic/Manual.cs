@@ -77,7 +77,7 @@ namespace ECSGame
         {
           var agent = unit.Get<LinkedComponent<NavMeshAgent>>().v;
           agent.SetDestination(target);
-          agent.stoppingDistance = 1f;
+          // agent.stoppingDistance = 1f;
         }
       }
 
