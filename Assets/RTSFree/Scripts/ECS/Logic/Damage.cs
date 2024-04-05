@@ -141,10 +141,16 @@ namespace ECSGame
             e.Get<LinkedComponent<NavMeshAgent>>().v.enabled = false;
             foreach (var attacker in world.Each<ShouldApproach>())
                 if (attacker.Get<ShouldApproach>().target.Id == e.Id)
+                {
                     attacker.Add(new ShouldFindTarget());
+                    attacker.Remove<ShouldApproach>();
+                }
             foreach (var attacker in world.Each<ShouldAttack>())
                 if (attacker.Get<ShouldAttack>().target.Id == e.Id)
+                {
                     attacker.Add(new ShouldFindTarget());
+                    attacker.Remove<ShouldAttack>();
+                }
             AddRequest add_request;
             add_request.Component = typeof(Rotting);
             add_request.Entity = e;
