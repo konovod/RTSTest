@@ -123,6 +123,13 @@ namespace ECSGame
             else if ((agent.destination - target_transform.position).sqrMagnitude > MathF.Max(1f, distance * distance * 0.01f))
             {
                 agent.SetDestination(target_transform.position);
+                LogicActive.WaitFor(e, UnityEngine.Random.Range(0.4f, 0.7f));
+                if (UnityEngine.Random.Range(0, 1) == 0)
+                {
+                    e.Remove<ShouldApproach>();
+                    e.Add(new ShouldFindTarget());
+                }
+
             }
         }
     }
