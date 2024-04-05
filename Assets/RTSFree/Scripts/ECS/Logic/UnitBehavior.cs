@@ -11,27 +11,6 @@ using UnityEngine.UIElements;
 namespace ECSGame
 {
 
-
-    [Serializable]
-    public struct UnitNeedNation
-    {
-        public int id;
-    }
-
-    [Serializable]
-    public struct UnitNation
-    {
-        public Entity e;
-    }
-    [Serializable]
-    public struct Movable { }
-
-    public struct ChangeColor
-    {
-        public ChangeColor(Color color) { v = color; }
-        public Color v;
-    }
-
     public struct ShouldAttack
     {
         public ShouldAttack(Entity whom) { target = whom; }
@@ -82,20 +61,6 @@ namespace ECSGame
         }
     }
 
-    public class RecolorUnit : ECS.System
-    {
-        public RecolorUnit(ECS.World aworld) : base(aworld) { }
-        public override ECS.Filter? Filter(ECS.World world)
-        {
-            return world.Inc<ChangeColor>().Inc<LinkedComponent<Renderer>>();
-        }
-        public override void Process(Entity e)
-        {
-            e.Get<LinkedComponent<Renderer>>().v.material.color = e.Get<ChangeColor>().v;
-
-        }
-    }
-
     public class ApproachTarget : ECS.System
     {
         public ApproachTarget(ECS.World aworld) : base(aworld) { }
@@ -106,23 +71,23 @@ namespace ECSGame
         public override void Process(Entity e)
         {
             var agent = e.Get<LinkedComponent<NavMeshAgent>>().v;
-            var transform = e.Get<LinkedGameObject>().Transform();
+            var position = e.Get<Position>().v;
             var target = e.Get<ShouldApproach>().target;
-            var target_transform = target.Get<LinkedGameObject>().Transform();
+            var target_position = target.Get<Position>().v;
             float stoppDistance = e.Get<AttackStats>().distance;
-            var distance = (transform.position - target_transform.position).magnitude;
+            var distance = (position - target_position).magnitude;
 
             // если приближающийся уже близок к своей цели
             if (distance < stoppDistance)
             {
-                agent.SetDestination(transform.position);
+                agent.SetDestination(position);
                 e.Remove<ShouldApproach>();
                 e.Add(new ShouldAttack(target));
                 e.Set(new ChangeColor(Color.red));
             }
-            else if ((agent.destination - target_transform.position).sqrMagnitude > MathF.Max(1f, distance * distance * 0.01f))
+            else if ((agent.destination - target_position).sqrMagnitude > MathF.Max(1f, distance * distance * 0.01f))
             {
-                agent.SetDestination(target_transform.position);
+                agent.SetDestination(target_position);
                 LogicActive.WaitFor(e, UnityEngine.Random.Range(0.4f, 0.7f));
                 if (UnityEngine.Random.Range(0, 1) == 0)
                 {
@@ -133,5 +98,6 @@ namespace ECSGame
             }
         }
     }
+
 
 }

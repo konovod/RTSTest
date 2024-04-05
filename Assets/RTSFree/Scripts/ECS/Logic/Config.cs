@@ -9,6 +9,7 @@ namespace ECSGame
     public static void InitSystems(ECS.World world, ECS.Systems OnUpdate, ECS.Systems OnFixedUpdate)
     {
       ////////////////// add here systems that is called on Update
+      OnUpdate.Add(new CacheUnitPosition(world));
       OnUpdate.Add(new SpawnSystem(world));
       OnUpdate.Add(new CreateNations(world));
       OnUpdate.Add(new UpdateSearchTree(world));

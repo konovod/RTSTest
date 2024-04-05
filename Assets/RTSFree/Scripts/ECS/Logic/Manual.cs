@@ -71,6 +71,7 @@ namespace ECSGame
       foreach (var unit in world.Each<IsSelected>())
       {
         unit.Set(new UnitCommand(target));
+        unit.Set(new UnitCommandStatus());
         unit.Set(new ChangeColor(Color.cyan));
         if (unit.Has<Movable>())
         {
@@ -92,6 +93,27 @@ namespace ECSGame
     public override void Process(Entity e)
     {
       e.Remove<IsSelected>();
+      e.Get<LinkedComponent<StatusBar>>().v.SelectView.SetActive(false);
+    }
+  }
+
+  public struct UnitCommandStatus
+  {
+    public float prev_distance;
+    public int fails;
+  }
+
+
+  public class CheckUnitCommandStatus : ECS.System
+  {
+    public CheckUnitCommandStatus(ECS.World aworld) : base(aworld) { }
+    public override ECS.Filter? Filter(ECS.World world)
+    {
+      return world.Inc<UnitCommandStatus>().Exc<IsSelected>();
+    }
+    public override void Process(Entity e)
+    {
+      // var distance = (transform.position - manualDestination).magnitude;
     }
   }
 

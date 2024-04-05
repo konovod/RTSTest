@@ -111,7 +111,7 @@ namespace ECSGame
                 {
                     tree.targets[i] = unit;
                     tree.indices[i + 1] = i + 1;
-                    tree.positions[i + 1] = unit.Get<LinkedGameObject>().Transform().position;
+                    tree.positions[i + 1] = unit.Get<Position>().v;
                     i++;
                 }
             }

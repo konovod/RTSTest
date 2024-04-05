@@ -53,10 +53,10 @@ namespace ECSGame
         }
         public override void Process(Entity e)
         {
-            var transform = e.Get<LinkedGameObject>().Transform();
+            var position = e.Get<Position>().v;
             var target = e.Get<ShouldAttack>().target;
-            var target_transform = target.Get<LinkedGameObject>().Transform();
-            var distance = (transform.position - target_transform.position).magnitude;
+            var target_position = target.Get<Position>().v;
+            var distance = (position - target_position).magnitude;
             var attack_distance = e.Get<AttackStats>().distance;
             if (distance > attack_distance)
             {
