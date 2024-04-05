@@ -51,7 +51,7 @@ namespace ECSGame
         public FindAttackTarget(ECS.World aworld) : base(aworld) { }
         public override ECS.Filter? Filter(ECS.World world)
         {
-            return world.Inc<Alive>().Inc<AttackStats>().Inc<ShouldFindTarget>().Inc<LogicActive>();
+            return world.Inc<Alive>().Inc<AttackStats>().Inc<ShouldFindTarget>().Inc<LogicActive>().Exc<UnitCommand>();
         }
         public override void Process(Entity e)
         {
@@ -101,7 +101,7 @@ namespace ECSGame
         public ApproachTarget(ECS.World aworld) : base(aworld) { }
         public override ECS.Filter? Filter(ECS.World world)
         {
-            return world.Inc<ShouldApproach>().Inc<Movable>().Inc<Alive>().Inc<LogicActive>();
+            return world.Inc<ShouldApproach>().Inc<Movable>().Inc<Alive>().Inc<LogicActive>().Exc<UnitCommand>();
         }
         public override void Process(Entity e)
         {

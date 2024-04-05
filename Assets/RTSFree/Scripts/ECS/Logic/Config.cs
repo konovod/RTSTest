@@ -18,6 +18,7 @@ namespace ECSGame
       OnUpdate.Add(new ApplyDamage(world));
       OnUpdate.Add(new RespondToAttacks(world));
       OnUpdate.DelHere<AttackHit>();
+      OnUpdate.Add(new DeselectOnDeath(world));
       OnUpdate.Add(new ProcessDeath(world));
       OnUpdate.DelHere<StartDying>();
       OnUpdate.Add(new ProcessRotting(world));

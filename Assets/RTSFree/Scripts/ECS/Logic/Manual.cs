@@ -2,6 +2,8 @@
 
 using UnityECSLink;
 using UnityEngine;
+using UnityEngine.AI;
+using ECS;
 
 namespace ECSGame
 {
@@ -67,7 +69,29 @@ namespace ECSGame
     {
       var target = e.Get<ManualTarget>().v;
       foreach (var unit in world.Each<IsSelected>())
+      {
         unit.Set(new UnitCommand(target));
+        unit.Set(new ChangeColor(Color.cyan));
+        if (unit.Has<Movable>())
+        {
+          var agent = unit.Get<LinkedComponent<NavMeshAgent>>().v;
+          agent.SetDestination(target);
+        }
+      }
+
+    }
+  }
+
+  public class DeselectOnDeath : ECS.System
+  {
+    public DeselectOnDeath(ECS.World aworld) : base(aworld) { }
+    public override ECS.Filter? Filter(ECS.World world)
+    {
+      return world.Inc<StartDying>().Inc<IsSelected>();
+    }
+    public override void Process(Entity e)
+    {
+      e.Remove<IsSelected>();
     }
   }
 
