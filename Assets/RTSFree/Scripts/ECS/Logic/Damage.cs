@@ -119,7 +119,7 @@ namespace ECSGame
             foreach (var attacker in world.Each<HasTarget>())
                 if (attacker.Get<HasTarget>().v.Id == e.Id)
                 {
-                    attacker.Remove<HasTarget>();
+                    attacker.Set(new RemoveTarget());
                 }
             AddRequest add_request;
             add_request.Component = typeof(Rotting);

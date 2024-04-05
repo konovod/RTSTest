@@ -23,6 +23,7 @@ namespace ECSGame
         public HasTarget(Entity whom) { v = whom; }
         public Entity v;
     }
+    public struct RemoveTarget { }
     public struct ShouldAttack { }
 
     public class FindAttackTarget : ECS.System
@@ -48,6 +49,7 @@ namespace ECSGame
             var target = tree.targets[targetId];
             e.RemoveIfPresent<ShouldAttack>();
             e.Set(new HasTarget(target));
+            target.Get<Attackers>().v.Add(e);
             e.Set(new ChangeColor(Color.green));
             var agent = e.Get<LinkedComponent<NavMeshAgent>>().v;
             var target_transform = target.Get<LinkedGameObject>().Transform();
@@ -86,14 +88,27 @@ namespace ECSGame
             {
                 agent.SetDestination(target_position);
                 LogicActive.WaitFor(e, UnityEngine.Random.Range(0.4f, 0.7f));
-                if (UnityEngine.Random.Range(0, 1) == 0)
+                if (UnityEngine.Random.Range(0, 4) == 0)
                 {
-                    e.Remove<HasTarget>();
+                    e.Set(new RemoveTarget());
                 }
-
             }
         }
     }
-
+    public class RemoveUnitTargets : ECS.System
+    {
+        public RemoveUnitTargets(ECS.World aworld) : base(aworld) { }
+        public override ECS.Filter? Filter(ECS.World world)
+        {
+            return world.Inc<RemoveTarget>();
+        }
+        public override void Process(Entity e)
+        {
+            var target = e.Get<HasTarget>().v;
+            target.Get<Attackers>().v.Remove(e);
+            e.Remove<HasTarget>();
+            e.RemoveIfPresent<ShouldAttack>();
+        }
+    }
 
 }

@@ -11,23 +11,33 @@ namespace ECSGame
       ////////////////// add here systems that is called on Update
       OnUpdate.Add(new CacheUnitPosition(world));
       OnUpdate.Add(new SpawnSystem(world));
+
+      OnUpdate.Add(new ProcessInitialUnitStates(world));
+      OnUpdate.DelHere<InitialUnitState>();
+
       OnUpdate.Add(new CreateNations(world));
       OnUpdate.Add(new UpdateSearchTree(world));
       OnUpdate.Add(new FindAttackTarget(world));
       OnUpdate.Add(new ApproachTarget(world));
       OnUpdate.Add(new UnitAttackTargets(world));
+
       OnUpdate.Add(new ApplyDamage(world));
       OnUpdate.DelHere<AttackHit>();
+
       OnUpdate.Add(new DeselectOnDeath(world));
       OnUpdate.Add(new ProcessDeath(world));
       OnUpdate.DelHere<StartDying>();
+
       OnUpdate.Add(new ProcessRotting(world));
       OnUpdate.Add(new SelectUnits(world));
       OnUpdate.DelHere<JustSelected>();
+
       OnUpdate.Add(new TargetSelectedUnits(world));
       OnUpdate.Add(new CheckUnitCommandStatus(world));
       OnUpdate.DelHere<ManualTarget>();
 
+      OnUpdate.Add(new RemoveUnitTargets(world));
+      OnUpdate.DelHere<RemoveTarget>();
 
       OnUpdate.Add(new RecolorUnit(world));
       OnUpdate.DelHere<ChangeColor>();

@@ -10,6 +10,9 @@ using UnityEngine.UIElements;
 
 namespace ECSGame
 {
+
+    [Serializable]
+    public struct InitialUnitState { }
     [Serializable]
     public struct UnitNeedNation
     {
@@ -63,5 +66,21 @@ namespace ECSGame
         }
     }
 
+    public class ProcessInitialUnitStates : ECS.System
+    {
+        public ProcessInitialUnitStates(ECS.World aworld) : base(aworld) { }
+        public override ECS.Filter? Filter(ECS.World world)
+        {
+            return world.Inc<InitialUnitState>();
+        }
+        public override void Process(Entity e)
+        {
+            e.Add(new Alive());
+            Attackers list;
+            list.v = new();
+            e.Add(list);
+            e.Add(new LogicActive());
+        }
+    }
 
 }

@@ -107,6 +107,8 @@ namespace ECSGame
             tree.indices[0] = 0;
             foreach (var unit in all_units)
             {
+                if (unit.Get<Attackers>().v.Count >= unit.Get<MaxAttackers>().v)
+                    continue;
                 if (unit.Get<UnitNation>().e.Id != e.Id)
                 {
                     tree.targets[i] = unit;
