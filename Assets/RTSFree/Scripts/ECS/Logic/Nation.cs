@@ -12,14 +12,20 @@ namespace ECSGame
     [Serializable]
     public struct DistanceTree
     {
+        const int MAX_KD_REQUESTS = 500;
         public Entity[] targets;
         public Vector3[] positions;
         public int[] indices;
         public int count;
         public RTSToolkitFree.KDTree targetKD;
-
+        public int frame_requests;
         public bool FindNearest(Vector3 pos, out Entity obj)
         {
+            if (frame_requests > MAX_KD_REQUESTS)
+            {
+                obj = default;
+                return false;
+            }
             var index = targetKD.FindNearest(pos);
             if (index < 0)
             {
@@ -80,6 +86,7 @@ namespace ECSGame
                 tree.positions[0] = new Vector3(-999999999999.99f, -999999999999.99f, -999999999999.99f);
                 tree.indices = new int[1];
                 tree.indices[0] = 0;
+                tree.frame_requests = 0;
 
                 tree.targetKD = new();
                 the_nation.Add(tree);

@@ -34,12 +34,20 @@ namespace ECSGame
         {
             return world.Inc<Alive>().Inc<AttackStats>().Exc<HasTarget>().Inc<LogicActive>().Exc<UnitCommand>();
         }
+        public override void PreProcess()
+        {
+            foreach (var tree in world.Each<DistanceTree>())
+                tree.GetRef<DistanceTree>().frame_requests = 0;
+        }
+
+
         public override void Process(Entity e)
         {
             if (!e.Has<UnitNation>())
                 return;
-            var tree = e.Get<UnitNation>().e.Get<DistanceTree>();
+            ref var tree = ref e.Get<UnitNation>().e.GetRef<DistanceTree>();
             var transform = e.Get<LinkedGameObject>().Transform();
+            tree.frame_requests++;
             if (!tree.FindNearest(transform.position, out var target))
             {
                 e.Set(new ChangeColor(Color.yellow));
@@ -102,10 +110,12 @@ namespace ECSGame
         public override void Process(Entity e)
         {
             var position = e.Get<Position>().v;
+            ref var tree = ref e.Get<UnitNation>().e.GetRef<DistanceTree>();
+            tree.frame_requests++;
+            if (!tree.FindNearest(position, out var another))
+                return;
             var target = e.Get<HasTarget>().v;
             var target_position = target.Get<Position>().v;
-            if (!e.Get<UnitNation>().e.Get<DistanceTree>().FindNearest(position, out var another))
-                return;
             bool good = (!MaxAttackers.USE_IT) || (another.Get<Attackers>().v.Count < another.Get<MaxAttackers>().v);
             var another_position = another.Get<Position>().v;
             if (good && (another_position - position).sqrMagnitude < (target_position - position).sqrMagnitude)
