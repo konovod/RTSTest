@@ -29,11 +29,10 @@ namespace ECSGame
       OnUpdate.Add(new DeselectOnDeath(world));
       OnUpdate.Add(new ProcessDeath(world));
       OnUpdate.DelHere<StartDying>();
-
       OnUpdate.Add(new ProcessRotting(world));
+
       OnUpdate.Add(new SelectUnits(world));
       OnUpdate.DelHere<JustSelected>();
-
       OnUpdate.Add(new TargetSelectedUnits(world));
       OnUpdate.Add(new CheckUnitCommandStatus(world));
       OnUpdate.DelHere<ManualTarget>();
