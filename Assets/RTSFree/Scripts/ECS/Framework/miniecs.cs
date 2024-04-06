@@ -92,7 +92,7 @@ namespace ECS
       if (Has<T>())
       {
         Pool<T> pool = World.GetStorage<T>();
-        int index = pool.IndexByEntity[Id];
+        int index = pool.IndexById(Id);
         pool.Items.Items[index] = item;
       }
       else
@@ -244,6 +244,7 @@ namespace ECS
     int IdByIndex(int id);
     void Clear();
     void AddDefault(int id);
+    void Cache(int id, int index);
   }
 
   // Created because older c# do not support getting ref on a list element
@@ -280,13 +281,18 @@ namespace ECS
     public List<int> Entities = new(128);
     public Dictionary<int, int> IndexByEntity = new();
 
+    internal int CacheIndex = -1;
+    internal int CacheId = -1;
+
     public bool Has(int id)
     {
+      if (id == CacheId)
+        return true;
       return IndexByEntity.ContainsKey(id);
     }
     public void Remove(int id)
     {
-      int index = IndexByEntity[id];
+      int index = IndexById(id);
       int last = Items.Count - 1;
       if (index != last)
       {
@@ -297,17 +303,23 @@ namespace ECS
       Items.RemoveLast();
       Entities.RemoveAt(last);
       IndexByEntity.Remove(id);
+      CacheId = -1;
+      CacheIndex = -1;
     }
     public void Add(int id, T item)
     {
       var index = AddIndex(id);
       Items.Items[index] = item;
+      CacheId = id;
+      CacheIndex = index;
     }
 
     public void AddDefault(int id)
     {
       var index = AddIndex(id);
       Items.Items[index] = default;
+      CacheId = id;
+      CacheIndex = index;
     }
 
     public int AddIndex(int id)
@@ -316,16 +328,27 @@ namespace ECS
       Entities.Add(id);
       int index = Items.Count - 1;
       IndexByEntity.Add(id, index);
+      CacheId = id;
+      CacheIndex = index;
       return index;
     }
 
     public int IndexById(int id)
     {
+      if (id == CacheId)
+        return CacheIndex;
       return IndexByEntity[id];
     }
     public int IdByIndex(int id)
     {
+      if (id == CacheIndex)
+        return CacheId;
       return Entities[id];
+    }
+    public void Cache(int id, int index)
+    {
+      CacheId = id;
+      CacheIndex = index;
     }
 
     public void Clear()
@@ -333,6 +356,8 @@ namespace ECS
       Entities.Clear();
       Items.Clear();
       IndexByEntity.Clear();
+      CacheId = -1;
+      CacheIndex = -1;
     }
 
   }
@@ -402,6 +427,7 @@ namespace ECS
       }
       else
         cached = entity;
+      pool.Cache(cached, index);
       return true;
     }
 
@@ -583,6 +609,7 @@ namespace ECS
       Statistics.Add("Total", 0);
     }
 
+    const float STAT_FILTER = 0.1f; //set to 0.1f for smooth stats, set to 1.0f for precise stats
     public override void Execute()
     {
       FullTimer.Reset();
@@ -623,12 +650,12 @@ namespace ECS
       foreach (var child in children)
       {
         var new_stat = Timers[i].ElapsedTicks * 1000.0 / Stopwatch.Frequency;
-        Statistics[child.GetType().ToString()] = Statistics[child.GetType().ToString()] * 0.9 + new_stat * 0.1;
+        Statistics[child.GetType().ToString()] = Statistics[child.GetType().ToString()] * (1 - STAT_FILTER) + new_stat * STAT_FILTER;
         i += 1;
       }
       FullTimer.Stop();
       var new_total = FullTimer.ElapsedTicks * 1000.0 / Stopwatch.Frequency;
-      Statistics["Total"] = Statistics["Total"] * 0.9 + new_total * 0.1;
+      Statistics["Total"] = Statistics["Total"] * (1 - STAT_FILTER) + new_total * STAT_FILTER;
     }
     public override void Teardown()
     {
