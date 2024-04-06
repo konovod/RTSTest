@@ -97,6 +97,10 @@ namespace ECSGame
             else
                 health = target.Get<MaxHealth>().v;
             health -= hit.damage;
+            if (target.Has<LinkedComponent<StatusBar>>())
+            {
+                target.Get<LinkedComponent<StatusBar>>().v.SetHealth(Mathf.Max(health, 0));
+            }
             if (health <= 0)
                 target.Set(new StartDying());
             target.Set(new Health(health));
