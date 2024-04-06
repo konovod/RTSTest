@@ -17,6 +17,7 @@ namespace ECSGame
     public struct MaxAttackers
     {
         public int v;
+        public static bool USE_IT = false;
     }
     public struct HasTarget
     {
@@ -39,17 +40,16 @@ namespace ECSGame
                 return;
             var tree = e.Get<UnitNation>().e.Get<DistanceTree>();
             var transform = e.Get<LinkedGameObject>().Transform();
-            var targetId = tree.targetKD.FindNearest(transform.position);
-            if (targetId < 0)
+            if (!tree.FindNearest(transform.position, out var target))
             {
                 e.Set(new ChangeColor(Color.yellow));
                 e.RemoveIfPresent<ShouldAttack>();
                 return;
             }
-            var target = tree.targets[targetId];
             e.RemoveIfPresent<ShouldAttack>();
             e.Set(new HasTarget(target));
-            target.Get<Attackers>().v.Add(e);
+            if (MaxAttackers.USE_IT)
+                target.Get<Attackers>().v.Add(e);
             e.Set(new ChangeColor(Color.green));
             var agent = e.Get<LinkedComponent<NavMeshAgent>>().v;
             var target_transform = target.Get<LinkedGameObject>().Transform();
@@ -87,14 +87,41 @@ namespace ECSGame
             else if ((agent.destination - target_position).sqrMagnitude > MathF.Max(1f, distance * distance * 0.01f))
             {
                 agent.SetDestination(target_position);
-                LogicActive.WaitFor(e, UnityEngine.Random.Range(0.4f, 0.7f));
-                if (UnityEngine.Random.Range(0, 4) == 0)
-                {
-                    e.Set(new RemoveTarget());
-                }
+                // LogicActive.WaitFor(e, UnityEngine.Random.Range(0.4f, 0.7f));
             }
         }
     }
+
+    public class RetargetUnits : ECS.System
+    {
+        public RetargetUnits(ECS.World aworld) : base(aworld) { }
+        public override ECS.Filter? Filter(ECS.World world)
+        {
+            return world.Inc<Movable>().Inc<Alive>().Inc<LogicActive>().Inc<HasTarget>().Exc<ShouldAttack>().Exc<UnitCommand>();
+        }
+        public override void Process(Entity e)
+        {
+            var position = e.Get<Position>().v;
+            var target = e.Get<HasTarget>().v;
+            var target_position = target.Get<Position>().v;
+            if (!e.Get<UnitNation>().e.Get<DistanceTree>().FindNearest(position, out var another))
+                return;
+            bool good = (!MaxAttackers.USE_IT) || (another.Get<Attackers>().v.Count < another.Get<MaxAttackers>().v);
+            var another_position = another.Get<Position>().v;
+            if (good && (another_position - position).sqrMagnitude < (target_position - position).sqrMagnitude)
+            {
+                e.Set(new HasTarget(another));
+                if (MaxAttackers.USE_IT)
+                {
+                    target.Get<Attackers>().v.Remove(e);
+                    another.Get<Attackers>().v.Add(e);
+                }
+            }
+            LogicActive.WaitFor(e, UnityEngine.Random.Range(0.4f, 0.7f));
+
+        }
+    }
+
     public class RemoveUnitTargets : ECS.System
     {
         public RemoveUnitTargets(ECS.World aworld) : base(aworld) { }
@@ -105,7 +132,8 @@ namespace ECSGame
         public override void Process(Entity e)
         {
             var target = e.Get<HasTarget>().v;
-            target.Get<Attackers>().v.Remove(e);
+            if (MaxAttackers.USE_IT)
+                target.Get<Attackers>().v.Remove(e);
             e.Remove<HasTarget>();
             e.RemoveIfPresent<ShouldAttack>();
         }

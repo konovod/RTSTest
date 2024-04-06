@@ -121,6 +121,10 @@ namespace ECSGame
                 {
                     attacker.Set(new RemoveTarget());
                 }
+            if (MaxAttackers.USE_IT)
+                foreach (var victim in world.Each<Attackers>())
+                    victim.Get<Attackers>().v.Remove(e);
+
             AddRequest add_request;
             add_request.Component = typeof(Rotting);
             add_request.Entity = e;

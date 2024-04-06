@@ -9,7 +9,6 @@ using UnityEngine;
 
 namespace ECSGame
 {
-
     [Serializable]
     public struct DistanceTree
     {
@@ -18,6 +17,21 @@ namespace ECSGame
         public int[] indices;
         public int count;
         public RTSToolkitFree.KDTree targetKD;
+
+        public bool FindNearest(Vector3 pos, out Entity obj)
+        {
+            var index = targetKD.FindNearest(pos);
+            if (index < 0)
+            {
+                obj = default;
+                return false;
+            }
+            else
+            {
+                obj = targets[index];
+                return true;
+            }
+        }
     }
 
     [Serializable]
@@ -107,7 +121,7 @@ namespace ECSGame
             tree.indices[0] = 0;
             foreach (var unit in all_units)
             {
-                if (unit.Get<Attackers>().v.Count >= unit.Get<MaxAttackers>().v)
+                if (MaxAttackers.USE_IT && unit.Get<Attackers>().v.Count >= unit.Get<MaxAttackers>().v)
                     continue;
                 if (unit.Get<UnitNation>().e.Id != e.Id)
                 {

@@ -19,6 +19,8 @@ namespace ECSGame
       OnUpdate.Add(new UpdateSearchTree(world));
       OnUpdate.Add(new FindAttackTarget(world));
       OnUpdate.Add(new ApproachTarget(world));
+      OnUpdate.Add(new RetargetUnits(world));
+
       OnUpdate.Add(new UnitAttackTargets(world));
 
       OnUpdate.Add(new ApplyDamage(world));
