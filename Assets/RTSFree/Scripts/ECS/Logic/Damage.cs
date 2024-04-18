@@ -12,8 +12,9 @@ namespace ECSGame
     [Serializable]
     public struct AttackStats
     {
-        public float strength;
-        public float distance;
+        public float Strength;
+        public float WeaponDistance;
+        public float TotalDistance;
     }
     [Serializable]
     public struct DefenseStats
@@ -57,14 +58,14 @@ namespace ECSGame
             var target = e.Get<HasTarget>().v;
             var target_position = target.Get<Position>().v;
             var distance = (position - target_position).magnitude;
-            var attack_distance = e.Get<AttackStats>().distance;
+            var attack_distance = e.Get<AttackStats>().TotalDistance;
             if (distance > attack_distance)
             {
                 e.Remove<ShouldAttack>();
                 e.Set(new ChangeColor(Color.green));
                 return;
             }
-            var strength = e.Get<AttackStats>().strength;
+            var strength = e.Get<AttackStats>().Strength;
             var defense = target.Get<DefenseStats>().defense;
             if (UnityEngine.Random.value > (strength / (strength + defense)))
             {

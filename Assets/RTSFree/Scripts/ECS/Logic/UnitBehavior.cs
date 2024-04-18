@@ -64,7 +64,7 @@ namespace ECSGame
             if (!agent.enabled)
                 agent.enabled = true;
             agent.stoppingDistance = agent.radius / transform.localScale.x + target.Get<LinkedComponent<NavMeshAgent>>().v.radius / target_transform.localScale.x;
-            e.GetRef<AttackStats>().distance = 2f + transform.localScale.x * target_transform.localScale.x * agent.stoppingDistance;
+            e.GetRef<AttackStats>().TotalDistance = e.Get<AttackStats>().WeaponDistance + 2f + transform.localScale.x * target_transform.localScale.x * agent.stoppingDistance;
             LogicActive.WaitFor(e, UnityEngine.Random.Range(0.5f, 1f));
         }
     }
@@ -82,7 +82,7 @@ namespace ECSGame
             var position = e.Get<Position>().v;
             var target = e.Get<HasTarget>().v;
             var target_position = target.Get<Position>().v;
-            float stoppDistance = e.Get<AttackStats>().distance;
+            float stoppDistance = e.Get<AttackStats>().TotalDistance;
             var distance = (position - target_position).magnitude;
 
             // если приближающийся уже близок к своей цели
