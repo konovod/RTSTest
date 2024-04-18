@@ -65,7 +65,7 @@ namespace ECSGame
     {
       //TODO - some metaprogramming?
       Link<NavMeshAgent>(gameObject, entity);
-      Link<Renderer>(gameObject, entity);
+      LinkChild<Renderer>(gameObject, entity);
       LinkChild<StatusBar>(gameObject, entity);
     }
   }
