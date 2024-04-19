@@ -24,6 +24,9 @@ namespace ECSGame
       OnUpdate.Add(new AimTurretToTarget(world));
 
       OnUpdate.Add(new UnitAttackTargets(world));
+      OnUpdate.Add(new MeleeAttacks(world));
+      OnUpdate.Add(new RangedAttacks(world));
+      OnUpdate.DelHere<PerformAttack>();
 
       OnUpdate.Add(new ApplyDamage(world));
       OnUpdate.DelHere<AttackHit>();

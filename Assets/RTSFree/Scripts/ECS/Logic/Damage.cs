@@ -37,6 +37,8 @@ namespace ECSGame
     public struct Dying { }
     public struct Rotting { }
 
+    public struct PerformAttack { }
+
     public struct AttackHit
     {
         public float damage;
@@ -50,7 +52,7 @@ namespace ECSGame
         public UnitAttackTargets(ECS.World aworld) : base(aworld) { }
         public override ECS.Filter? Filter(ECS.World world)
         {
-            return world.Inc<AttackStats>().Inc<ShouldAttack>().Inc<Alive>().Inc<LogicActive>().Exc<UnitCommand>();
+            return world.Inc<AttackStats>().Inc<ShouldAttack>().Inc<Alive>().Inc<LogicActive>().Exc<UnitCommand>().Inc<Melee>();
         }
         public override void Process(Entity e)
         {
@@ -65,6 +67,20 @@ namespace ECSGame
                 e.Set(new ChangeColor(Color.green));
                 return;
             }
+            e.Add(new PerformAttack());
+        }
+    }
+
+    public class MeleeAttacks : ECS.System
+    {
+        public MeleeAttacks(ECS.World aworld) : base(aworld) { }
+        public override ECS.Filter? Filter(ECS.World world)
+        {
+            return world.Inc<PerformAttack>().Inc<Melee>();
+        }
+        public override void Process(Entity e)
+        {
+            var target = e.Get<HasTarget>().v;
             var strength = e.Get<AttackStats>().Strength;
             var defense = target.Get<DefenseStats>().defense;
             if (UnityEngine.Random.value > (strength / (strength + defense)))
@@ -74,8 +90,9 @@ namespace ECSGame
                 hit.source = e;
                 hit.target = target;
                 world.NewEntity().Add(hit);
-                LogicActive.WaitFor(e, 0.5f);
             }
+            LogicActive.WaitFor(e, 0.5f);
+
         }
     }
 
