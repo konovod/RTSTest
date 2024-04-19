@@ -1,6 +1,7 @@
 #nullable enable
 
 using System;
+using System.Dynamic;
 using ECS;
 using UnityECSLink;
 using UnityEngine;
@@ -28,6 +29,23 @@ namespace ECSGame
     {
     }
 
+    [Serializable]
+    public struct RangedWeapon
+    {
+        public GameObject projectile;
+        public Transform shootPoint;
+        public float force;
+        public float shootingDelay;
+    }
+
+    public struct Bullet
+    {
+    }
+    public struct BulletInitialForce
+    {
+        public BulletInitialForce(Vector3 force) { v = force; }
+        public Vector3 v;
+    }
 
 
     public class AimTurretToTarget : ECS.System
@@ -62,24 +80,35 @@ namespace ECSGame
         public RangedAttacks(ECS.World aworld) : base(aworld) { }
         public override ECS.Filter? Filter(ECS.World world)
         {
-            return world.Inc<PerformAttack>().Exc<Melee>();
+            return world.Inc<PerformAttack>().Inc<RangedWeapon>();
         }
         public override void Process(Entity e)
         {
-            var target = e.Get<HasTarget>().v;
-            var strength = e.Get<AttackStats>().Strength;
-            var defense = target.Get<DefenseStats>().defense;
-            if (UnityEngine.Random.value > (strength / (strength + defense)))
-            {
-                AttackHit hit;
-                hit.damage = 2.0f * strength * UnityEngine.Random.value;
-                hit.source = e;
-                hit.target = target;
-                world.NewEntity().Add(hit);
-            }
-            LogicActive.WaitFor(e, 0.5f);
+            var gun = e.Get<RangedWeapon>();
+            var created = world.NewEntity();
+            UnityECSLink.InstantiateGameObject request;
+            request.pos = gun.shootPoint.position;
+            request.rot = gun.shootPoint.rotation;
+            request.Template = gun.projectile;
+            created.Add(request);
+            // Add force to the Instantiated bullet TODO
+            created.Add(new BulletInitialForce(gun.shootPoint.forward * gun.force));
+            LogicActive.WaitFor(e, gun.shootingDelay);
         }
     }
 
+    public class BulletsApplyInitialForce : ECS.System
+    {
+        public BulletsApplyInitialForce(ECS.World aworld) : base(aworld) { }
+        public override ECS.Filter? Filter(ECS.World world)
+        {
+            return world.Inc<BulletInitialForce>().Inc<LinkedGameObject>();
+        }
+        public override void Process(Entity e)
+        {
+            e.Get<LinkedGameObject>().Obj.GetComponent<Rigidbody>().AddForce(e.Get<BulletInitialForce>().v);
+            e.Remove<BulletInitialForce>();
+        }
+    }
 
 }

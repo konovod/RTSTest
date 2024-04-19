@@ -52,7 +52,7 @@ namespace ECSGame
         public UnitAttackTargets(ECS.World aworld) : base(aworld) { }
         public override ECS.Filter? Filter(ECS.World world)
         {
-            return world.Inc<AttackStats>().Inc<ShouldAttack>().Inc<Alive>().Inc<LogicActive>().Exc<UnitCommand>().Inc<Melee>();
+            return world.Inc<AttackStats>().Inc<ShouldAttack>().Inc<Alive>().Inc<LogicActive>().Exc<UnitCommand>();
         }
         public override void Process(Entity e)
         {

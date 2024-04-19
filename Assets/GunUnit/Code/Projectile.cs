@@ -38,7 +38,7 @@ namespace RTSToolkitFree
             //     hit.target = linked.entity;
             //     linked.AddApplyDamage(damageValue);
             // }
-
+            return;
 
             // Instantiate the collision particle
             if (damageParticle)
