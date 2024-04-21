@@ -16,7 +16,7 @@ namespace ECSGame
             e.Remove<LogicActive>();
             UnityECSLink.AddRequest add_request;
             add_request.Component = typeof(LogicActive);
-            add_request.Entity = e;
+            add_request.entity = e;
             add_request.time = e.World.FirstComponent<UnityECSLink.GlobalTime>().Time + time;
             e.World.NewEntity().Add(add_request);
 

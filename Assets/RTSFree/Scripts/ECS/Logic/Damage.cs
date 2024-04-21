@@ -149,7 +149,7 @@ namespace ECSGame
 
             AddRequest add_request;
             add_request.Component = typeof(Rotting);
-            add_request.Entity = e;
+            add_request.entity = e;
             add_request.time = world.FirstComponent<UnityECSLink.GlobalTime>().Time + 5;
             world.NewEntity().Add(add_request);
 

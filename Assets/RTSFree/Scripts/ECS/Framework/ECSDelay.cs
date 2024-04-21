@@ -11,6 +11,7 @@ namespace UnityECSLink
     {
         public void Execute();
         public float Time();
+        public Entity Entity();
     }
 
 
@@ -19,19 +20,21 @@ namespace UnityECSLink
     public struct RemoveRequest : ComponentRequest
     {
         public Type Component;
-        public Entity Entity;
+        public Entity entity;
         public float time;
         public float Time() { return time; }
-        public void Execute() { Entity.Remove(Component); }
+        public Entity Entity() { return entity; }
+        public void Execute() { entity.Remove(Component); }
     };
 
     public struct AddRequest : ComponentRequest
     {
         public Type Component;
-        public Entity Entity;
+        public Entity entity;
         public float time;
         public float Time() { return time; }
-        public void Execute() { Entity.AddDefault(Component); }
+        public Entity Entity() { return entity; }
+        public void Execute() { entity.AddDefault(Component); }
     };
 
     public struct GlobalTime
@@ -87,7 +90,8 @@ namespace UnityECSLink
             while ((queue.Count > 0) && (queue.Peek().Time() <= CurTime))
             {
                 var request = queue.Dequeue();
-                request.Execute();
+                if (request.Entity().Alive())
+                    request.Execute();
             }
         }
     }

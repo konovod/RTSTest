@@ -38,8 +38,11 @@ namespace ECSGame
         public float shootingDelay;
     }
 
+    [Serializable]
     public struct Bullet
     {
+        public Entity source;
+        public float damage;
     }
     public struct BulletInitialForce
     {
@@ -47,6 +50,11 @@ namespace ECSGame
         public Vector3 v;
     }
 
+    [Serializable]
+    public struct BulletHit
+    {
+        public Entity target;
+    }
 
     public class AimTurretToTarget : ECS.System
     {
@@ -82,6 +90,7 @@ namespace ECSGame
         {
             return world.Inc<PerformAttack>().Inc<RangedWeapon>();
         }
+
         public override void Process(Entity e)
         {
             var gun = e.Get<RangedWeapon>();
@@ -91,9 +100,20 @@ namespace ECSGame
             request.rot = gun.shootPoint.rotation;
             request.Template = gun.projectile;
             created.Add(request);
-            // Add force to the Instantiated bullet TODO
             created.Add(new BulletInitialForce(gun.shootPoint.forward * gun.force));
+            Bullet bullet;
+            bullet.damage = e.Get<AttackStats>().Strength;
+            bullet.source = e;
+            created.Add(bullet);
             LogicActive.WaitFor(e, gun.shootingDelay);
+
+            UnityECSLink.AddRequest add_request;
+            add_request.Component = typeof(DestroyGameObject);
+            add_request.entity = created;
+            add_request.time = e.World.FirstComponent<UnityECSLink.GlobalTime>().Time + 5f;
+            world.NewEntity().Add(add_request);
+
+
         }
     }
 
@@ -110,5 +130,25 @@ namespace ECSGame
             e.Remove<BulletInitialForce>();
         }
     }
+
+    public class ProcessBulletHits : ECS.System
+    {
+        public ProcessBulletHits(ECS.World aworld) : base(aworld) { }
+        public override ECS.Filter? Filter(ECS.World world)
+        {
+            return world.Inc<BulletHit>();
+        }
+        public override void Process(Entity e)
+        {
+            AttackHit hit;
+            var bullet = e.Get<Bullet>();
+            hit.damage = 2.0f * bullet.damage * UnityEngine.Random.value;
+            hit.source = bullet.source;
+            hit.target = e.Get<BulletHit>().target;
+            world.NewEntity().Add(hit);
+            e.Add(new DestroyGameObject());
+        }
+    }
+
 
 }

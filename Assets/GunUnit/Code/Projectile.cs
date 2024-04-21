@@ -12,41 +12,18 @@ namespace RTSToolkitFree
 
     public class Projectile : MonoBehaviour
     {
-        // Damage value to apply to the target after collision
-        public int damageValue;
-
-        // Instantiate the damage particle after collision
-        public GameObject damageParticle;
-
-        // Destroy the projectile after 5 seconds with out collision
-        public float lifeTime = 5f;
-
-        IEnumerator Start()
-        {
-            // Destroy the projectile after lifeTime value with out collision
-            yield return new WaitForSeconds(lifeTime);
-            Destroy(gameObject);
-        }
-
         void OnCollisionEnter(Collision collision)
         {
-            // LinkedEntity linked = collision.gameObject.GetComponent<LinkedEntity>();
-            // if (linked != null ) 
-            // { 
-            //     AttackHit hit;
-            //     hit.source = ;
-            //     hit.target = linked.entity;
-            //     linked.AddApplyDamage(damageValue);
-            // }
-            return;
-
-            // Instantiate the collision particle
-            if (damageParticle)
-                Instantiate(damageParticle, transform.position, transform.rotation);
-
-            // Destroy the projectile (or bullet)
-            Destroy(gameObject);
-
+            var linked = GetComponent<LinkedEntity>().entity;
+            if (linked.Has<BulletHit>())
+                return;
+            if (collision.gameObject.TryGetComponent<LinkedEntity>(out var target))
+            {
+                BulletHit hit;
+                hit.target = target.entity;
+                if (!linked.Has<BulletHit>())
+                    linked.Add(hit);
+            }
         }
     }
 }

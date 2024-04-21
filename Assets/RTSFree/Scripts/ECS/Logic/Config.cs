@@ -25,8 +25,14 @@ namespace ECSGame
 
       OnUpdate.Add(new UnitAttackTargets(world));
       OnUpdate.Add(new MeleeAttacks(world));
+
       OnUpdate.Add(new RangedAttacks(world));
       OnUpdate.Add(new BulletsApplyInitialForce(world));
+
+      OnUpdate.Add(new ProcessBulletHits(world));
+      OnUpdate.DelHere<BulletHit>();
+
+
       OnUpdate.DelHere<PerformAttack>();
 
       OnUpdate.Add(new ApplyDamage(world));
